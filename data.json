@@ -1,0 +1,200 @@
+{
+  "i18n": {
+    "navWorks": { "en": "Works", "fa": "نمونه‌کارها" },
+    "navSkills": { "en": "Skills", "fa": "مهارت‌ها" },
+    "navContact": { "en": "Reach Me", "fa": "تماس" },
+    "heroBadge": { "en": "Open to opportunities", "fa": "آماده همکاری" },
+    "heroGreeting": { "en": "Hello, I'm", "fa": "سلام، من" },
+    "heroGreetingEnding": { "en": ".", "fa": " هستم." },
+    "worksLabel": { "en": "Portfolio", "fa": "نمونه‌کارها" },
+    "worksTitle": { "en": "Selected Works & Projects", "fa": "پروژه‌های منتخب" },
+    "skillsLabel": { "en": "Expertise", "fa": "تخصص" },
+    "skillsTitle": { "en": "Technologies & Tools", "fa": "فناوری‌ها و ابزارها" },
+    "contactLabel": { "en": "Get In Touch", "fa": "در تماس باشید" },
+    "contactTitle": { "en": "How to Reach Me", "fa": "راه‌های ارتباطی" },
+    "footerText": { "en": "Built with passion. All rights reserved.", "fa": "ساخته شده با اشتیاق. تمامی حقوق محفوظ است." }
+  },
+  "personal": {
+    "en": {
+      "name": "Abbas",
+      "fullName": "Abbas Hatami Khoshmardan",
+      "role": "Telecommunication Engineer • AI Specialist • Embedded Hardware & Software Developer",
+      "location": "Mashhad, Iran — available worldwide",
+      "email": "khoshmard@gmail.com",
+      "tagline": "Bridging hardware, AI, and software to build the future of connected systems.",
+      "heroTags": [
+        { "icon": "📡", "label": "Telecom Engineering" },
+        { "icon": "🤖", "label": "Artificial Intelligence" },
+        { "icon": "🔌", "label": "Electronic Boards" },
+        { "icon": "📱", "label": "Software Development" }
+      ]
+    },
+    "fa": {
+      "name": "عباس",
+      "fullName": "حاتمی خوشمردان",
+      "role": "مهندس مخابرات • متخصص هوش مصنوعی • توسعه‌دهنده سخت‌افزار و نرم‌افزار",
+      "location": "مشهد، ایران — آماده همکاری در سراسر جهان",
+      "email": "khoshmard@gmail.com",
+      "heroTags": [
+        { "icon": "📡", "label": "مهندسی مخابرات" },
+        { "icon": "🤖", "label": "هوش مصنوعی" },
+        { "icon": "🔌", "label": "بردهای الکترونیکی" },
+        { "icon": "📱", "label": "توسعه نرم‌افزار" }
+      ]
+    }
+  },
+  "projects": [
+    {
+      "id": 1,
+      "icon": "📡",
+      "en": {
+        "title": "5G Small Cell SDR Prototype",
+        "description": "Designed and implemented a software-defined radio (SDR) based 5G small cell using LimeSDR and OpenAirInterface. Achieved sub‑6GHz band operation with real‑time signal processing.",
+        "tech": ["SDR", "5G NR", "C++", "Python", "RF Design", "OpenAirInterface"],
+        "detailedDescription": "Full‑stack implementation of a 5G NR small cell using LimeSDR hardware and the OpenAirInterface stack. I handled everything from RF calibration and antenna design to real‑time baseband processing. The prototype successfully connected commercial 5G handsets in a lab environment, demonstrating sub‑6GHz TDD operation with bandwidths up to 40 MHz."
+      },
+      "fa": {
+        "title": "نمونه اولیه سلول کوچک 5G با SDR",
+        "description": "طراحی و پیاده‌سازی یک سلول کوچک 5G مبتنی بر رادیوی نرم‌افزاری با استفاده از LimeSDR و OpenAirInterface. عملکرد در باند زیر 6 گیگاهرتز با پردازش سیگنال بلادرنگ.",
+        "tech": ["SDR", "5G NR", "C++", "Python", "طراحی RF", "OpenAirInterface"],
+        "detailedDescription": "پیاده‌سازی کامل یک سلول کوچک 5G NR با استفاده از سخت‌افزار LimeSDR و پشته OpenAirInterface. تمام مراحل از کالیبراسیون RF و طراحی آنتن تا پردازش باند پایه بلادرنگ انجام شد. نمونه اولیه با موفقیت گوشی‌های 5G تجاری را در محیط آزمایشگاهی متصل کرد و عملکرد TDD زیر 6 گیگاهرتز با پهنای باند تا 40 مگاهرتز را نشان داد."
+      },
+      "link": "#"
+    },
+    {
+      "id": 2,
+      "icon": "🤖",
+      "en": {
+        "title": "AI‑Powered Spectrum Anomaly Detector",
+        "description": "Deep learning model (CNN + LSTM) deployed on an NVIDIA Jetson Nano to detect anomalous RF signals in real‑time across wideband spectrum captures.",
+        "tech": ["PyTorch", "CNN", "LSTM", "Jetson Nano", "RF", "MQTT"],
+        "detailedDescription": "Trained a hybrid CNN‑LSTM architecture on a custom dataset of RF spectrum anomalies. The model was optimized with TensorRT and deployed on Jetson Nano for edge inference, achieving >95% accuracy with <50ms latency. Integrated MQTT for remote alerts and a dashboard for live monitoring."
+      },
+      "fa": {
+        "title": "آشکارساز ناهنجاری طیف با هوش مصنوعی",
+        "description": "مدل یادگیری عمیق (CNN + LSTM) روی NVIDIA Jetson Nano برای تشخیص بلادرنگ سیگنال‌های RF غیرعادی در پهنای باند وسیع.",
+        "tech": ["PyTorch", "CNN", "LSTM", "Jetson Nano", "RF", "MQTT"],
+        "detailedDescription": "آموزش یک معماری ترکیبی CNN‑LSTM روی مجموعه داده اختصاصی ناهنجاری‌های طیف RF. مدل با TensorRT بهینه‌سازی و روی Jetson Nano مستقر شد و دقت بالای ۹۵٪ با تأخیر کمتر از ۵۰ میلی‌ثانیه ارائه داد. هشدارهای MQTT و داشبورد زنده نیز یکپارچه شد."
+      },
+      "link": "#"
+    },
+    {
+      "id": 3,
+      "icon": "🔌",
+      "en": {
+        "title": "Custom IoT Sensor Board (ESP32‑C6)",
+        "description": "Ultra‑low‑power environmental sensor board with BLE 5.4, Zigbee, and energy harvesting. Designed in KiCad, assembled, and tested for smart agriculture deployments.",
+        "tech": ["KiCad", "ESP32‑C6", "BLE", "Zigbee", "C", "Energy Harvesting"],
+        "detailedDescription": "Designed a compact 4‑layer PCB integrating temperature, humidity, soil moisture sensors and a solar energy harvester. Firmware in C (ESP‑IDF) manages deep sleep modes, achieving 6‑month battery life on a single coin cell. Over 200 units deployed in vineyards for real‑time monitoring."
+      },
+      "fa": {
+        "title": "برد حسگر IoT سفارشی (ESP32‑C6)",
+        "description": "برد حسگر محیطی با مصرف فوق‌العاده کم با BLE 5.4، Zigbee و برداشت انرژی. طراحی در KiCad، مونتاژ و آزمایش برای کشاورزی هوشمند.",
+        "tech": ["KiCad", "ESP32‑C6", "BLE", "Zigbee", "C", "برداشت انرژی"],
+        "detailedDescription": "یک برد ۴ لایه جمع‌وجور با حسگرهای دما، رطوبت، رطوبت خاک و برداشت‌کننده انرژی خورشیدی طراحی شد. فریمور به زبان C با حالت‌های خواب عمیق، عمر باتری ۶ ماهه با یک باتری سکه‌ای را فراهم می‌کند. بیش از ۲۰۰ واحد در تاکستان‌ها نصب شده است."
+      },
+      "link": "#"
+    },
+    {
+      "id": 4,
+      "icon": "📱",
+      "en": {
+        "title": "Telecom Field Toolkit App",
+        "description": "Cross‑platform Flutter app for field engineers: spectrum analyzer visualization, site survey logging, and equipment configuration via Bluetooth.",
+        "tech": ["Flutter", "Dart", "Bluetooth LE", "Firebase", "REST API"],
+        "detailedDescription": "Developed a Flutter application used by over 500 field technicians. Features include a real‑time FFT waterfall display, GPS‑tagged measurement logs, and one‑tap configuration of repeaters/antennas over BLE. Offline‑first architecture with Firestore sync."
+      },
+      "fa": {
+        "title": "اپلیکیشن جعبه ابزار میدانی مخابرات",
+        "description": "اپلیکیشن چندسکویی Flutter برای مهندسان میدانی: نمایش تحلیلگر طیف، ثبت بررسی سایت و پیکربندی تجهیزات از طریق بلوتوث.",
+        "tech": ["Flutter", "Dart", "Bluetooth LE", "Firebase", "REST API"],
+        "detailedDescription": "اپلیکیشنی با Flutter ساخته شد که توسط بیش از ۵۰۰ تکنسین میدانی استفاده می‌شود. ویژگی‌ها شامل نمایش زنده waterfall FFT، ثبت اندازه‌گیری‌های دارای GPS و پیکربندی یک‌ضربه‌ای تکرارکننده‌ها/آنتن‌ها از طریق BLE است."
+      },
+      "link": "#"
+    },
+    {
+      "id": 5,
+      "icon": "🧠",
+      "en": {
+        "title": "Edge AI Inference on FPGA",
+        "description": "Implemented a quantized neural network on a Xilinx Zynq FPGA for low‑latency signal classification at the edge. Achieved <1ms inference time per sample.",
+        "tech": ["Verilog", "Vivado", "TensorFlow Lite", "FPGA", "Zynq"],
+        "detailedDescription": "Mapped a compact 1D CNN to the programmable logic of a Zynq‑7020. Used HLS to implement custom layers and achieved deterministic sub‑millisecond inference. Deployed in a real‑time RF fingerprinting system for drone detection."
+      },
+      "fa": {
+        "title": "استنتاج هوش مصنوعی لب‌ه روی FPGA",
+        "description": "شبکه عصبی کوانتیزه روی FPGA Xilinx Zynq برای طبقه‌بندی سیگنال با تأخیر کم در لبه پیاده‌سازی شد. زمان استنتاج زیر ۱ میلی‌ثانیه.",
+        "tech": ["Verilog", "Vivado", "TensorFlow Lite", "FPGA", "Zynq"],
+        "detailedDescription": "یک CNN 1D فشرده روی منطق برنامه‌پذیر Zynq‑7020 نگاشت شد. از HLS برای پیاده‌سازی لایه‌های سفارشی استفاده و به استنتاج قطعی زیر میلی‌ثانیه دست یافت. در سیستم تشخیص پهپاد مبتنی بر اثر انگشت RF به‌کار گرفته شد."
+      },
+      "link": "#"
+    },
+    {
+      "id": 6,
+      "icon": "🌐",
+      "en": {
+        "title": "LoRaWAN Mesh Network Gateway",
+        "description": "Designed a solar‑powered LoRaWAN gateway with mesh backhaul for remote area connectivity. Deployed across 12 nodes in rural terrain for environmental monitoring.",
+        "tech": ["LoRaWAN", "Mesh", "Solar", "Raspberry Pi", "Node‑RED", "InfluxDB"],
+        "detailedDescription": "Built a self‑healing mesh network using LoRa modules and a Raspberry Pi gateway. Solar panels with MPPT charging ensure 24/7 operation. Data is aggregated via Node‑RED and stored in InfluxDB, with a Grafana dashboard accessible locally via Wi‑Fi hotspot."
+      },
+      "fa": {
+        "title": "گیت‌وی شبکه مش LoRaWAN",
+        "description": "گیت‌وی LoRaWAN خورشیدی با بک‌هال مش برای ارتباط مناطق دورافتاده طراحی شد. در ۱۲ گره در زمین‌های روستایی برای پایش محیطی مستقر شد.",
+        "tech": ["LoRaWAN", "مش", "خورشیدی", "Raspberry Pi", "Node‑RED", "InfluxDB"],
+        "detailedDescription": "یک شبکه مش خودترمیم با ماژول‌های LoRa و گیت‌وی Raspberry Pi ساخته شد. پنل‌های خورشیدی با شارژ MPPT عملکرد ۲۴/۷ را تضمین می‌کنند. داده‌ها از طریق Node‑RED تجمیع و در InfluxDB ذخیره می‌شوند، با داشبورد Grafana قابل دسترس از طریق هات‌اسپات Wi‑Fi."
+      },
+      "link": "#"
+    }
+  ],
+  "skills": [
+    "5G / LTE / NR",
+    "Signal Processing",
+    "SDR (LimeSDR, USRP)",
+    "RF Circuit Design",
+    "KiCad / Altium",
+    "Embedded C / C++",
+    "Python",
+    "PyTorch / TensorFlow",
+    "Edge AI (Jetson, FPGA)",
+    "ESP32 / STM32",
+    "Flutter / Dart",
+    "React / Next.js",
+    "Docker / Kubernetes",
+    "MQTT / LoRaWAN",
+    "Git / CI‑CD",
+    "Linux / RTOS"
+  ],
+  "contactLinks": [
+    {
+      "platformEn": "Email",
+      "platformFa": "ایمیل",
+      "url": "mailto:khoshmard@gmail.com",
+      "icon": "✉️"
+    },
+    {
+      "platformEn": "LinkedIn",
+      "platformFa": "لینکدین",
+      "url": "https://linkedin.com/in/khoshmard",
+      "icon": "💼"
+    },
+    {
+      "platformEn": "GitHub",
+      "platformFa": "گیت‌هاب",
+      "url": "https://github.com/khoshmard",
+      "icon": "🐙"
+    },
+    {
+      "platformEn": "Twitter / X",
+      "platformFa": "توییتر",
+      "url": "https://x.com/khoshmard",
+      "icon": "🐦"
+    },
+    {
+      "platformEn": "Resume PDF",
+      "platformFa": "رزومه PDF",
+      "url": "#",
+      "icon": "📄"
+    }
+  ]
+}
