@@ -253,12 +253,24 @@ function closeModal() {
     modalOverlay.classList.remove('active');
 }
 
-// ─── Navigation handling ───
+// ─── Navigation handling (scroll + show) ───
 document.querySelectorAll('.nav-link, #nav-home').forEach(link => {
     link.addEventListener('click', e => {
         e.preventDefault();
-        const target = link.dataset.target || 'home'; // logo has no data-target, treat as home
+        const target = link.dataset.target || 'home';
         showSection(target);
+
+        // Scroll to the appropriate section
+        if (target === 'home') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (target !== 'blog') {
+            const sectionId = target + '-section';   // e.g. 'works-section'
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        // For 'blog', no scroll – the blog section will appear at its natural place
     });
 });
 
