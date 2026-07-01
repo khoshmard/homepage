@@ -1,0 +1,14 @@
+{
+  "title": {
+    "en": "How 5G O-RAN is Changing Telecom Hardware",
+    "fa": "چگونه 5G O-RAN سخت‌افزار مخابرات را متحول می‌کند"
+  },
+  "readTime": {
+    "en": "7 min read",
+    "fa": "۷ دقیقه مطالعه"
+  },
+  "content": {
+    "en": "<p>Open RAN (O-RAN) is transforming the telecom landscape by decoupling hardware and software components. In traditional RAN, baseband units (BBUs) and remote radio heads (RRHs) were tightly integrated with proprietary interfaces. With O-RAN, we now have open, interoperable interfaces that allow mixing hardware from different vendors.</p><p>This shift has major implications for hardware engineers: we can now design generic compute platforms (x86, ARM, FPGA) that run virtualized baseband software. This article dives into the architecture, the hardware challenges (especially around latency and timing), and how you can prototype your own O-RAN compliant radio unit using off‑the‑shelf SDRs.</p>",
+    "fa": "<p>Open RAN (O-RAN) با جدا کردن اجزای سخت‌افزاری و نرم‌افزاری چشم‌انداز مخابرات را تغییر می‌دهد. در RAN سنتی، واحدهای باند پایه (BBU) و سرهای رادیویی راه دور (RRH) با رابط‌های اختصاصی یکپارچه بودند. با O-RAN، اکنون رابط‌های باز و قابل همکاری داریم که امکان ترکیب سخت‌افزار از فروشندگان مختلف را فراهم می‌کند.</p><p>این تغییر پیامدهای بزرگی برای مهندسان سخت‌افزار دارد: اکنون می‌توانیم پلتفرم‌های محاسباتی عمومی (x86، ARM، FPGA) طراحی کنیم که نرم‌افزار باند پایه مجازی را اجرا می‌کنند. این مقاله به بررسی معماری، چالش‌های سخت‌افزاری (به‌ویژه تأخیر و زمان‌بندی) و نحوه نمونه‌سازی واحد رادیویی سازگار با O-RAN با استفاده از SDRهای آماده می‌پردازد.</p>"
+  }
+}

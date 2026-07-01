@@ -18,28 +18,29 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <a href="#" class="nav-logo">◈ <span>Khoshmard</span></a>
+            <a href="#" class="nav-logo" id="nav-home">◈ <span>Khoshmard</span></a>
             <ul class="nav-links">
-                <li><a href="#works" data-i18n="navWorks">Works</a></li>
-                <li><a href="#skills" data-i18n="navSkills">Skills</a></li>
-                <li><a href="#contact" class="nav-cta" data-i18n="navContact">Reach Me</a></li>
+                <li><a href="#works" class="nav-link" data-target="works" data-i18n="navWorks">Works</a></li>
+                <li><a href="#blog" class="nav-link" data-target="blog" data-i18n="navBlog">Blog</a></li>
+                <li><a href="#skills" class="nav-link" data-target="skills" data-i18n="navSkills">Skills</a></li>
+                <li><a href="#contact" class="nav-link nav-cta" data-target="contact" data-i18n="navContact">Reach Me</a></li>
             </ul>
             <button id="lang-toggle" class="lang-btn" aria-label="Switch language">🇮🇷 فارسی</button>
         </div>
     </nav>
 
-    <!-- Hero -->
-    <header class="hero">
+    <!-- Hero (visible by default) -->
+    <header class="hero" id="hero-section">
         <div class="container">
             <div class="hero-badge"><span class="dot"></span> <span data-i18n="heroBadge">Open to opportunities</span></div>
-            <h1><span data-i18n="heroGreeting">Hello, I'm</span> <span class="highlight" id="hero-name-dynamic">Alex</span><span data-i18n="heroGreetingEnding">.</span></h1>
+            <h1><span data-i18n="heroGreeting">Hello, I'm</span> <span class="highlight" id="hero-name-dynamic">Abbas</span><span data-i18n="heroGreetingEnding">.</span></h1>
             <p class="hero-subtitle" id="hero-role"></p>
             <div class="hero-tags" id="hero-tags"></div>
         </div>
     </header>
 
     <!-- Works / Projects -->
-    <section class="section" id="works">
+    <section class="section" id="works-section">
         <div class="container">
             <p class="section-label" data-i18n="worksLabel">Portfolio</p>
             <h2 class="section-title" data-i18n="worksTitle">Selected Works & Projects</h2>
@@ -47,8 +48,21 @@
         </div>
     </section>
 
+    <!-- Blog (hidden by default) -->
+    <section class="section" id="blog-section" style="display: none;">
+        <div class="container">
+            <p class="section-label" data-i18n="blogLabel">Writings</p>
+            <h2 class="section-title" data-i18n="blogTitle">Latest Blog Posts</h2>
+            <div class="projects-grid" id="blog-posts-container"></div>
+            <div class="load-more-wrap">
+                <button class="load-more-btn" id="blog-load-more" data-i18n="loadMore">Load More Posts</button>
+                <p class="no-more" id="blog-no-more" data-i18n="noMore">You've reached the end.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Skills -->
-    <section class="section" id="skills">
+    <section class="section" id="skills-section">
         <div class="container">
             <p class="section-label" data-i18n="skillsLabel">Expertise</p>
             <h2 class="section-title" data-i18n="skillsTitle">Technologies & Tools</h2>
@@ -57,7 +71,7 @@
     </section>
 
     <!-- Contact -->
-    <section class="section" id="contact">
+    <section class="section" id="contact-section">
         <div class="container">
             <p class="section-label" data-i18n="contactLabel">Get In Touch</p>
             <h2 class="section-title" data-i18n="contactTitle">How to Reach Me</h2>
@@ -78,13 +92,14 @@
         </div>
     </footer>
 
-    <!-- Modal for project details -->
+    <!-- Modal (shared for projects and blog posts) -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" id="modal-close">&times;</button>
             <div class="modal-icon" id="modal-icon"></div>
+            <div class="modal-meta" id="modal-meta"></div>
             <h3 class="modal-title" id="modal-title"></h3>
-            <p class="modal-description" id="modal-description"></p>
+            <div class="modal-body" id="modal-body"></div>
             <div class="modal-tech" id="modal-tech"></div>
             <a href="#" class="modal-link" id="modal-link" target="_blank" rel="noopener"></a>
         </div>
