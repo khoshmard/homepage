@@ -380,3 +380,57 @@ html[lang="fa"] .modal-meta {
     margin-top: 16px;
     display: none;
 }
+
+/* ── Social Grid ── */
+.social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.social-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: var(--transition);
+    position: relative;
+    cursor: pointer;
+}
+.social-card:hover {
+    border-color: #3a3a55;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+}
+.social-card .social-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.social-card .social-platform-icon {
+    font-size: 1.4rem;
+}
+.social-card .social-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+.social-card .social-content {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+.social-card .social-link {
+    color: var(--accent-2);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.social-card .social-link:hover {
+    color: #fff;
+}

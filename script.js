@@ -5,18 +5,25 @@ let postsIndex = [];
 let postsCache = {};
 let blogDisplayedCount = 0;
 const POSTS_PER_PAGE = 3;
+let allSocialPosts = [];
+let socialDisplayedCount = 0;
+const SOCIAL_PER_PAGE = 3;
 
 // ─── DOM elements ───
 const langToggle = document.getElementById('lang-toggle');
 const heroSection = document.getElementById('hero-section');
 const worksSection = document.getElementById('works-section');
 const blogSection = document.getElementById('blog-section');
+const socialSection = document.getElementById('social-section');
 const skillsSection = document.getElementById('skills-section');
 const contactSection = document.getElementById('contact-section');
 const projectsContainer = document.getElementById('projects-container');
 const blogPostsContainer = document.getElementById('blog-posts-container');
 const blogLoadMoreBtn = document.getElementById('blog-load-more');
 const blogNoMoreMsg = document.getElementById('blog-no-more');
+const socialPostsContainer = document.getElementById('social-posts-container');
+const socialLoadMoreBtn = document.getElementById('social-load-more');
+const socialNoMoreMsg = document.getElementById('social-no-more');
 const skillsContainer = document.getElementById('skills-container');
 const contactLinksContainer = document.getElementById('contact-links');
 const heroTagsContainer = document.getElementById('hero-tags');
@@ -93,7 +100,7 @@ async function loadMainData() {
         const msg = document.createElement('p');
         msg.style.color = 'red';
         msg.style.textAlign = 'center';
-        msg.textContent = 'Error loading data. Please make sure you’re running a local server (e.g. npx serve .).';
+        msg.textContent = 'Error loading data. Please make sure you’re running a local server.';
         document.body.prepend(msg);
     }
 }
@@ -174,25 +181,34 @@ function renderMainPage() {
 // ─── Section visibility ───
 function showSection(target) {
     const allMainSections = [heroSection, worksSection, skillsSection];
+    const blogVisible = blogSection && blogSection.style.display === 'block';
+    const socialVisible = socialSection && socialSection.style.display === 'block';
+
     if (target === 'blog') {
-        // Hide hero, works, skills – keep blog and contact visible
         allMainSections.forEach(sec => sec.style.display = 'none');
         blogSection.style.display = 'block';
+        socialSection.style.display = 'none';
         contactSection.style.display = 'block';
-        // Load blog posts if not already loaded
         if (postsIndex.length === 0) {
             fetchBlogIndex().then(() => renderBlogNextPosts());
         } else if (blogPostsContainer.children.length === 0) {
             blogDisplayedCount = 0;
             renderBlogNextPosts();
         }
+    } else if (target === 'social') {
+        allMainSections.forEach(sec => sec.style.display = 'none');
+        socialSection.style.display = 'block';
+        blogSection.style.display = 'none';
+        contactSection.style.display = 'block';
+        loadSocialSection();
     } else {
-        // Show all main sections, hide blog
+        // Show all main, hide blog/social
         heroSection.style.display = 'block';
         worksSection.style.display = 'block';
         skillsSection.style.display = 'block';
         contactSection.style.display = 'block';
         blogSection.style.display = 'none';
+        socialSection.style.display = 'none';
     }
 }
 
@@ -222,7 +238,7 @@ function renderBlogNextPosts() {
         card.innerHTML = `
             <div class="project-icon">${post.icon || '📝'}</div>
             <div class="blog-meta">
-                <span>${currentLang === 'fa' ? toJalali(post.date) : post.date}</span>
+                <span>${lang === 'fa' ? toJalali(post.date) : post.date}</span>
                 <span>·</span>
                 <span>${(post.readTime?.[lang]) || (post.readTime?.en) || ''}</span>
             </div>
@@ -247,6 +263,72 @@ function resetBlogPosts() {
     blogLoadMoreBtn.style.display = 'inline-block';
     blogNoMoreMsg.style.display = 'none';
     if (postsIndex.length > 0) renderBlogNextPosts();
+}
+
+async function fetchSocialPosts() {
+    try {
+        const res = await fetch('social/index.json');
+        allSocialPosts = await res.json();
+        // Sort by date descending (just in case)
+        allSocialPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } catch (err) {
+        socialPostsContainer.innerHTML = '<p style="color:red;">Failed to load social posts.</p>';
+    }
+}
+
+function renderSocialNextPosts() {
+    const slice = allSocialPosts.slice(socialDisplayedCount, socialDisplayedCount + SOCIAL_PER_PAGE);
+    if (slice.length === 0) {
+        socialLoadMoreBtn.style.display = 'none';
+        socialNoMoreMsg.style.display = 'block';
+        return;
+    }
+
+    const lang = currentLang;
+    slice.forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'social-card';
+        card.innerHTML = `
+            <div class="social-header">
+                <span class="social-platform-icon">${post.icon || '📢'}</span>
+                <span class="social-date">${lang === 'fa' ? toJalali(post.date) : post.date}</span>
+            </div>
+            <div class="social-content">${(post.content?.[lang]) || (post.content?.en) || ''}</div>
+            <a href="${post.url}" class="social-link" target="_blank" rel="noopener">
+                ${lang === 'en' ? 'View original' : 'مشاهده پست اصلی'} ↗
+            </a>
+        `;
+        card.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'A') {
+                window.open(post.url, '_blank');
+            }
+        });
+        socialPostsContainer.appendChild(card);
+    });
+
+    socialDisplayedCount += slice.length;
+    if (socialDisplayedCount >= allSocialPosts.length) {
+        socialLoadMoreBtn.style.display = 'none';
+        socialNoMoreMsg.style.display = 'block';
+    }
+}
+
+function resetSocialPosts() {
+    socialPostsContainer.innerHTML = '';
+    socialDisplayedCount = 0;
+    socialLoadMoreBtn.style.display = 'inline-block';
+    socialNoMoreMsg.style.display = 'none';
+    if (allSocialPosts.length > 0) {
+        renderSocialNextPosts();
+    }
+}
+
+// Initialize social section
+async function loadSocialSection() {
+    if (allSocialPosts.length === 0) {
+        await fetchSocialPosts();
+    }
+    resetSocialPosts();
 }
 
 // ─── Modal: project ───
@@ -298,17 +380,16 @@ function closeModal() {
     modalOverlay?.classList.remove('active');
 }
 
-// ─── Event listeners ───
-blogLoadMoreBtn?.addEventListener('click', renderBlogNextPosts);
-
-// ─── Navigation handling (with special blog-aware Contact behavior) ───
+// ─── Navigation ───
 document.querySelectorAll('.nav-link, #nav-home').forEach(link => {
     link.addEventListener('click', e => {
         e.preventDefault();
         const target = link.dataset.target || 'home';
-
         const blogVisible = blogSection && blogSection.style.display === 'block';
-        if (target === 'contact' && blogVisible) {
+        const socialVisible = socialSection && socialSection.style.display === 'block';
+
+        // Special handling for Contact while blog or social is visible
+        if (target === 'contact' && (blogVisible || socialVisible)) {
             const contactEl = document.getElementById('contact-section');
             if (contactEl) contactEl.scrollIntoView({ behavior: 'smooth' });
             return;
@@ -318,22 +399,31 @@ document.querySelectorAll('.nav-link, #nav-home').forEach(link => {
 
         if (target === 'home') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (target !== 'blog') {
+        } else if (target !== 'blog' && target !== 'social') {
             const section = document.getElementById(`${target}-section`);
             if (section) section.scrollIntoView({ behavior: 'smooth' });
         } else {
-            blogSection?.scrollIntoView({ behavior: 'smooth' });
+            // Scroll to blog or social section
+            const section = document.getElementById(`${target}-section`);
+            if (section) section.scrollIntoView({ behavior: 'smooth' });
         }
     });
 });
 
+// ─── Load More Buttons ───
+blogLoadMoreBtn?.addEventListener('click', renderBlogNextPosts);
+socialLoadMoreBtn?.addEventListener('click', renderSocialNextPosts);
+
+// ─── Language toggle ───
 langToggle?.addEventListener('click', () => {
     currentLang = currentLang === 'en' ? 'fa' : 'en';
     applyLanguage();
     renderMainPage();
     if (blogSection?.style.display === 'block') resetBlogPosts();
+    if (socialSection?.style.display === 'block') resetSocialPosts();
 });
 
+// ─── Modal close ───
 modalClose?.addEventListener('click', closeModal);
 modalOverlay?.addEventListener('click', e => {
     if (e.target === modalOverlay) closeModal();

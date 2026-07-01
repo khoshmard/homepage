@@ -1,0 +1,35 @@
+[
+  {
+    "id": 301,
+    "platform": "twitter",
+    "icon": "🐦",
+    "date": "2025-03-01",
+    "url": "https://twitter.com/yourhandle/status/1234567890",
+    "content": {
+      "en": "Just finished testing an O-RAN RU prototype with open-source stack. Latency <1ms!",
+      "fa": "تست نمونه اولیه RU مبتنی بر O-RAN با پشته متن‌باز به پایان رسید. تأخیر زیر ۱ میلی‌ثانیه!"
+    }
+  },
+  {
+    "id": 302,
+    "platform": "linkedin",
+    "icon": "💼",
+    "date": "2025-02-20",
+    "url": "https://linkedin.com/in/yourprofile/posts/987654",
+    "content": {
+      "en": "Thrilled to share our new edge AI deployment on ESP32 – full tutorial coming soon.",
+      "fa": "خوشحالم که استقرار جدید هوش مصنوعی لب‌ه روی ESP32 را به اشتراک می‌گذارم – آموزش کامل به‌زودی."
+    }
+  },
+  {
+    "id": 303,
+    "platform": "twitter",
+    "icon": "🐦",
+    "date": "2025-01-10",
+    "url": "https://twitter.com/yourhandle/status/1111111111",
+    "content": {
+      "en": "RF PCB design tip: always simulate your impedance matching before fabrication. Saved me hours of debugging!",
+      "fa": "نکته طراحی PCB فرکانس بالا: همیشه تطبیق امپدانس را قبل از ساخت شبیه‌سازی کنید. ساعت‌ها دیباگ را ذخیره کرد!"
+    }
+  }
+]

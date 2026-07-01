@@ -1,7 +1,8 @@
 {
   "i18n": {
     "navWorks": { "en": "Works", "fa": "نمونه‌کارها" },
-    "navBlog": { "en": "Blog", "fa": "بلاگ" },
+    "navBlog": { "en": "Blog", "fa": "نوشته‌ها" },
+    "navSocial":  {"en": "Social", "fa": "افکار"},
     "navSkills": { "en": "Skills", "fa": "مهارت‌ها" },
     "navContact": { "en": "Reach Me", "fa": "تماس" },
     "heroBadge": { "en": "Open to opportunities", "fa": "آماده همکاری" },
@@ -13,6 +14,8 @@
     "blogTitle": { "en": "Latest Blog Posts", "fa": "آخرین پست‌های وبلاگ" },
     "loadMore": { "en": "Load More Posts", "fa": "بارگذاری بیشتر" },
     "noMore": { "en": "You've reached the end.", "fa": "به انتها رسیدید." },
+    "socialLabel": { "en": "Social Feed", "fa": "شبکه‌های اجتماعی" },
+    "socialTitle": { "en": "Latest Posts & Thoughts", "fa": "آخرین پست‌ها و افکار" },
     "skillsLabel": { "en": "Expertise", "fa": "تخصص" },
     "skillsTitle": { "en": "Technologies & Tools", "fa": "فناوری‌ها و ابزارها" },
     "contactLabel": { "en": "Get In Touch", "fa": "در تماس باشید" },
