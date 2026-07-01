@@ -135,10 +135,13 @@ function renderMainPage() {
 
 // ─── Section visibility ───
 function showSection(target) {
-    const all = [heroSection, worksSection, blogSection, skillsSection, contactSection];
+    const allMainSections = [heroSection, worksSection, skillsSection];
     if (target === 'blog') {
-        all.forEach(sec => sec.style.display = 'none');
+        // Hide hero, works, skills – keep blog and contact visible
+        allMainSections.forEach(sec => sec.style.display = 'none');
         blogSection.style.display = 'block';
+        contactSection.style.display = 'block';
+        // Load blog posts if not already loaded
         if (postsIndex.length === 0) {
             fetchBlogIndex().then(() => renderBlogNextPosts());
         } else if (blogPostsContainer.children.length === 0) {
@@ -146,6 +149,7 @@ function showSection(target) {
             renderBlogNextPosts();
         }
     } else {
+        // Show all main sections, hide blog
         heroSection.style.display = 'block';
         worksSection.style.display = 'block';
         skillsSection.style.display = 'block';
@@ -259,11 +263,21 @@ function closeModal() {
 // ─── Event listeners ───
 blogLoadMoreBtn?.addEventListener('click', renderBlogNextPosts);
 
+// ─── Navigation handling (with special blog-aware Contact behavior) ───
 document.querySelectorAll('.nav-link, #nav-home').forEach(link => {
     link.addEventListener('click', e => {
         e.preventDefault();
         const target = link.dataset.target || 'home';
+
+        const blogVisible = blogSection && blogSection.style.display === 'block';
+        if (target === 'contact' && blogVisible) {
+            const contactEl = document.getElementById('contact-section');
+            if (contactEl) contactEl.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
         showSection(target);
+
         if (target === 'home') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (target !== 'blog') {
