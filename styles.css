@@ -1,4 +1,47 @@
-﻿:root {
+﻿/* ── Local font faces ── */
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/JetBrainsMono-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('fonts/Vazirmatn-UI-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('fonts/Vazirmatn-UI-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+:root {
     --bg: #0a0a0f;
     --surface: #12121a;
     --surface-2: #1a1a26;
@@ -41,6 +84,32 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+}
+
+/* ── Base typography ── */
+html[lang="en"] body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html[lang="fa"] body {
+    font-family: 'Vazirmatn', 'Inter', system-ui, sans-serif;
+}
+
+/* Monospace elements – keep JetBrains Mono for English, fallback for Persian */
+html[lang="en"] .skill-chip,
+html[lang="en"] .project-tech span,
+html[lang="en"] .section-label,
+html[lang="en"] .blog-meta,
+html[lang="en"] .modal-meta {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+html[lang="fa"] .skill-chip,
+html[lang="fa"] .project-tech span,
+html[lang="fa"] .section-label,
+html[lang="fa"] .blog-meta,
+html[lang="fa"] .modal-meta {
+    font-family: 'Vazirmatn', 'JetBrains Mono', monospace;
 }
 
 /* Animated background grid */
