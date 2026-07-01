@@ -136,6 +136,27 @@ body {
 }
 .hero-tag:hover { border-color: var(--accent); background: var(--surface-3); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
 
+.hero-avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+    .hero-avatar img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--accent-2);
+        box-shadow: 0 0 30px rgba(0, 206, 201, 0.25);
+        transition: var(--transition);
+    }
+
+        .hero-avatar img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 45px rgba(0, 206, 201, 0.5);
+        }
+
 /* Sections */
 .section { padding: 60px 0; }
 .section-label {
