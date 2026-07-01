@@ -94,13 +94,21 @@ function renderMainPage() {
     skillsContainer.innerHTML = skills.map(s => `<span class="skill-chip">${s}</span>`).join('');
 
     // Contact
+    const emailUser = data.contactEmail.user;
+    const emailDomain = data.contactEmail.domain;
+    const fullEmail = `${emailUser}@${emailDomain}`;
+
     contactEmailLabel.textContent = lang === 'en'
-        ? `Let's collaborate — ${data.personal.en.email}`
-        : `همکاری — ${data.personal.fa.email}`;
+        ? `Let's collaborate — ${fullEmail}`
+        : `همکاری — ${fullEmail}`;
     contactLocation.textContent = personal.location;
     contactLinksContainer.innerHTML = data.contactLinks.map(l => {
         const platform = l[lang === 'en' ? 'platformEn' : 'platformFa'] || l.platformEn;
-        return `<a href="${l.url}" class="contact-link" target="_blank" rel="noopener">${l.icon} ${platform}</a>`;
+        let url = l.url;
+        if (platform.toLowerCase() === 'email' || url.startsWith('mailto:')) {
+            url = `mailto:${fullEmail}`;
+        }
+        return `<a href="${url}" class="contact-link" target="_blank" rel="noopener">${l.icon} ${platform}</a>`;
     }).join('');
 
     footerYear.textContent = new Date().getFullYear();

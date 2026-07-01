@@ -25,7 +25,6 @@
       "fullName": "Abbas Hatami Khoshmardan",
       "role": "Telecommunication Engineer • AI Specialist • Embedded Hardware & Software Developer",
       "location": "Mashhad, Iran — available worldwide",
-      "email": "khoshmard@gmail.com",
       "tagline": "Bridging hardware, AI, and software to build the future of connected systems.",
       "heroTags": [
         { "icon": "📡", "label": "Telecom Engineering" },
@@ -39,7 +38,6 @@
       "fullName": "حاتمی خوشمردان",
       "role": "مهندس مخابرات • متخصص هوش مصنوعی • توسعه‌دهنده سخت‌افزار و نرم‌افزار",
       "location": "مشهد، ایران — آماده همکاری در سراسر جهان",
-      "email": "khoshmard@gmail.com",
       "heroTags": [
         { "icon": "📡", "label": "مهندسی مخابرات" },
         { "icon": "🤖", "label": "هوش مصنوعی" },
@@ -48,6 +46,10 @@
       ]
     }
   },
+      "contactEmail": {
+      "user": "khoshmard",
+      "domain": "gmail.com"
+    },
   "projects": [
     {
       "id": 1,
@@ -174,7 +176,7 @@
     {
       "platformEn": "Email",
       "platformFa": "ایمیل",
-      "url": "mailto:khoshmard@gmail.com",
+      "url": "mailto:#",
       "icon": "✉️"
     },
     {
