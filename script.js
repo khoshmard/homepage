@@ -332,6 +332,13 @@ function resetBlogPosts() {
     if (postsIndex.length > 0) renderBlogNextPosts();
 }
 
+// Highlight hashtags
+function highlightHashtags(text) {
+    if (!text) return '';
+    // Matches: #word including Persian letters, numbers, underscores
+    return text.replace(/(#[\w\u0600-\u06FF]+)/g, '<span class="hashtag">$1</span>');
+}
+
 // Get filtered social posts for current language
 function getFilteredSocialPosts() {
     return allSocialPosts.filter(post => {
@@ -377,7 +384,7 @@ function renderSocialNextPosts() {
                 <span class="social-platform-name">(${lang === 'fa' ? platformData.nameFa : platformData.nameEn})</span>
                 <span class="social-date">${lang === 'fa' ? toJalali(post.date) : post.date}</span>
             </div>
-            <div class="social-content">${contentText}</div>
+            <div class="social-content">${highlightHashtags(contentText)}</div>
             <a href="${post.url}" class="social-link" target="_blank" rel="noopener">
                 ${lang === 'en' ? 'View original' : 'مشاهده پست اصلی'} ↗
             </a>
