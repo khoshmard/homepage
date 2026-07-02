@@ -332,6 +332,15 @@ function resetBlogPosts() {
     if (postsIndex.length > 0) renderBlogNextPosts();
 }
 
+// Get filtered social posts for current language
+function getFilteredSocialPosts() {
+    return allSocialPosts.filter(post => {
+        const content = post.content?.[currentLang];
+        if (Array.isArray(content)) return content.some(line => line.trim() !== '');
+        return typeof content === 'string' && content.trim() !== '';
+    });
+}
+
 async function fetchSocialPosts() {
     try {
         const res = await fetch('social/index.json');
@@ -344,7 +353,8 @@ async function fetchSocialPosts() {
 }
 
 function renderSocialNextPosts() {
-    const slice = allSocialPosts.slice(socialDisplayedCount, socialDisplayedCount + SOCIAL_PER_PAGE);
+    const filtered = getFilteredSocialPosts();
+    const slice = filtered.slice(socialDisplayedCount, socialDisplayedCount + SOCIAL_PER_PAGE);
     if (slice.length === 0) {
         socialLoadMoreBtn.style.display = 'none';
         socialNoMoreMsg.style.display = 'block';
@@ -355,6 +365,8 @@ function renderSocialNextPosts() {
     slice.forEach(post => {
         const platform = post.platform || 'twitter';
         const platformData = iconMap[platform];
+        const contentArray = post.content?.[lang] || post.content?.en || '';
+        const contentText = Array.isArray(contentArray) ? contentArray.join('<br>') : contentArray;
         const card = document.createElement('div');
         card.className = `social-card ${platform}`;   // adds class for color border
         card.innerHTML = `
@@ -365,7 +377,7 @@ function renderSocialNextPosts() {
                 <span class="social-platform-name">(${lang === 'fa' ? platformData.nameFa : platformData.nameEn})</span>
                 <span class="social-date">${lang === 'fa' ? toJalali(post.date) : post.date}</span>
             </div>
-            <div class="social-content">${(post.content?.[lang]) || (post.content?.en) || ''}</div>
+            <div class="social-content">${contentText}</div>
             <a href="${post.url}" class="social-link" target="_blank" rel="noopener">
                 ${lang === 'en' ? 'View original' : 'مشاهده پست اصلی'} ↗
             </a>
@@ -388,11 +400,16 @@ function renderSocialNextPosts() {
 function resetSocialPosts() {
     socialPostsContainer.innerHTML = '';
     socialDisplayedCount = 0;
+    const filtered = getFilteredSocialPosts();
+    if (filtered.length === 0) {
+        socialLoadMoreBtn.style.display = 'none';
+        socialNoMoreMsg.style.display = 'block';
+        socialNoMoreMsg.textContent = currentLang === 'en' ? 'No posts available.' : 'پستی موجود نیست.';
+        return;
+    }
     socialLoadMoreBtn.style.display = 'inline-block';
     socialNoMoreMsg.style.display = 'none';
-    if (allSocialPosts.length > 0) {
-        renderSocialNextPosts();
-    }
+    renderSocialNextPosts();   // will use filtered list inside
 }
 
 // Initialize social section
