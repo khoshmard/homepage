@@ -413,10 +413,16 @@ html[lang="fa"] .modal-meta {
 .social-card .social-platform-icon {
     font-size: 1.4rem;
 }
-.social-card .social-date {
-    font-size: 0.75rem;
+.social-card .social-platform-name {
+    font-size: 0.5rem;
     color: var(--text-muted);
+}
+html[lang="en"] .social-card .social-date {
+    font-size: 0.75rem;
     font-family: 'JetBrains Mono', monospace;
+}
+html[lang="fa"] .social-card .social-date {
+    font-family: 'Vazirmatn', 'JetBrains Mono', monospace;
 }
 .social-card .social-content {
     color: var(--text-secondary);
@@ -436,3 +442,17 @@ html[lang="fa"] .modal-meta {
 .social-card .social-link:hover {
     color: #fff;
 }
+
+html[lang="en"] .social-card { border-left: 3px solid transparent; }    
+html[lang="en"] .social-card.twitter { border-left-color: #ea4335; }
+html[lang="en"] .social-card.linkedin { border-left-color: #0a66c2; }
+html[lang="en"] .social-card.virasty { border-left-color: #1c9df0; }
+html[lang="en"] .social-card.eitaa { border-left-color: #e37600; }
+html[lang="en"] .social-card.bale { border-left-color: #4cebb4; }
+
+html[lang="fa"] .social-card { border-right: 3px solid transparent; }
+html[lang="fa"] .social-card.twitter { border-right-color: #ea4335; }
+html[lang="fa"] .social-card.linkedin { border-right-color: #0a66c2; }
+html[lang="fa"] .social-card.virasty { border-right-color: #1c9df0; }
+html[lang="fa"] .social-card.eitaa { border-right-color: #e37600; }
+html[lang="fa"] .social-card.bale { border-right-color: #4cebb4; }
