@@ -1,5 +1,31 @@
 [
   {
+    "id": 201,
+    "platform": "virasty",
+    "date": "2026-07-03",
+    "url": "https://virasty.ir/khoshmard/1783079755764000883",
+    "content": {
+      "fa": [
+        "ارزش و اهمیت همه‌ی این‌ها باهم کمتر از نمایندگان مجلسه!",
+        "دلیل: این‌ها می‌تونن یه جا جمع بشن! و اگه همه‌شون با هم طوری‌شون بشه، مشکلی پیش نمی‌یاد!",
+        "اما، نمی‌تونید تصور کنید که نماینده‌های #مجلس چه ارزشی دارند [چه قدرتی دارند] که نباید کنار هم جمع بشن!",
+        "#انتقام",
+        "#نفاق",
+        "#وفاق"
+      ]
+    },
+    "media": [
+      {
+        "type": "image",
+        "url": "https://cdn.virasty.com/25fe0a038d5761ea172b80e966aa935f/695999f9e14048cf9cc2279c7dee17eb",
+        "alt": "سران قوا",
+        "caption": {
+          "fa": "سران قوا در مراسم وداع امام"
+        }
+      }
+    ]
+  },
+  {
     "id": 200,
     "platform": "virasty",
     "date": "2026-06-24",
@@ -14,6 +40,22 @@
         "#شعام"
       ]
     }
+  },
+  {
+    "id": 100,
+    "platform": "virasty",
+    "date": "2026-06-21",
+    "url": "https://virasty.com/khoshmard/1782046200706193822",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/b8335cc7d6664ce28a101c81b89ed5c9",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/89086a940aaa4c55a94669e29c11fb4a",
+        "caption": {
+          "fa": "قالیباف"
+        }
+      }
+    ]
   },
   {
     "id": 199,
@@ -32,6 +74,22 @@
         "#مذاکره_حرام_است"
       ]
     }
+  },
+  {
+    "id": 99,
+    "platform": "virasty",
+    "date": "2026-06-11",
+    "url": "https://virasty.com/khoshmard/1781194175148998332",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/59b1b33046f14f5fa9a70a273991b54d",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/5839e9d236bc47d8878cd99928caf532",
+        "caption": {
+          "fa": "متوهم خیالباف"
+        }
+      }
+    ]
   },
   {
     "id": 198,
@@ -61,7 +119,17 @@
         "#خونخواهی_امام_شهید",
         "#مرگ_بر_آمریکا"
       ]
-    }
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/25fe0a038d5761ea172b80e966aa935f/7787b7d02d64430f9d2807a0ee75009c",
+        "thumbnail": "https://cdn.virasty.com/25fe0a038d5761ea172b80e966aa935f/b7436bb3b0994d219eb28b056c49015c",
+        "caption": {
+          "fa": "سخنان امام"
+        }
+      }
+    ]
   },
   {
     "id": 196,
@@ -78,7 +146,17 @@
         "-بعد از قتل ۱۰۰هزار ایرانی: ایمیل‌بازی نکنیم، چه کنیم؟",
         ""
       ]
-    }
+    },
+    "media": [
+      {
+        "type": "image",
+        "url": "https://cdn.virasty.com/25fe0a038d5761ea172b80e966aa935f/95e986f2b5e24a84ae8718622d3dd7e9",
+        "alt": "روزنامه",
+        "caption": {
+          "fa": "سخنان رئیس‌جمهوری در روزنامه"
+        }
+      }
+    ]
   },
   {
     "id": 195,
@@ -116,7 +194,17 @@
       "fa": [
         "نظر شخصی ملت ایران هم همینه!"
       ]
-    }
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/99d14b0403154e13af403dff860fb232",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/7ff062f0c9f54d13be5b8d2c799107d3",
+        "caption": {
+          "fa": "سخنان سردار رضایی"
+        }
+      }
+    ]
   },
   {
     "id": 192,
@@ -187,12 +275,169 @@
     }
   },
   {
+    "id": 186,
+    "platform": "virasty",
+    "date": "2026-04-08",
+    "url": "https://virasty.ir/khoshmard/1775662919016034640",
+    "content": {
+      "fa": [
+        "شاید روی پایان و برنده #جنگ حرف و حدیث باشه! اما روی بازنده نه:",
+        "بازنده اون بی‌وطنی بود که از #ترامپ و #نتانیاهو سلاح گرفت و ۳۰۰۰ ایرانی رو تو دیماه به کشتن داد!",
+        "بازنده اون لالی بود که بعد از ۴۰ روز زبون باز کرد که آخورش قطع نشه!",
+        "بازنده اون بی‌شرفی بود که راضی شده خون‌بهای نایب‌امام‌زمان پول باشه!"
+      ]
+    }
+  },
+  {
+    "id": 185,
+    "platform": "virasty",
+    "date": "2026-04-08",
+    "url": "https://virasty.ir/khoshmard/1775651326247225651",
+    "content": {
+      "fa": [
+        "#جنگ",
+        "#آتش_بس",
+        "#مذاکره",
+        "و دوباره",
+        "#جنگ",
+        "",
+        "خدایا به حق خلق در خیابان، به حق سربازان در میدان: شر دولت‌مردان بزدل را از ما دور کن!"
+      ]
+    }
+  },
+  {
+    "id": 184,
+    "platform": "virasty",
+    "date": "2026-04-08",
+    "url": "https://virasty.ir/khoshmard/1775599545317106585",
+    "content": {
+      "fa": [
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر",
+        "#مرگ_بر_سازشگر"
+      ]
+    }
+  },
+  {
+    "id": "183",
+    "platform": "virasty",
+    "date": "2026-04-07",
+    "url": "https://virasty.com/khoshmard/1775586699393827606",
+    "content": {
+      "fa": [
+        "حتی محمدرضاشاه فهمید! این‌ها نمی‌فهمند!",
+        "#ایران_قوی",
+        "#مرگ_بر_آمریکا",
+        "#مرگ‌_بر_اسرائیل"
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/4589152eb68547bb982d858c66dadabd",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/e519d18fa4bc4fdc90e1c57731832db8",
+        "caption": {
+          "fa": "سخنان محمدرضا شاه"
+        }
+      }
+    ]
+  },
+  {
+    "id": "182",
+    "platform": "virasty",
+    "date": "2025-04-05",
+    "url": "https://virasty.com/khoshmard/1775413111277132348",
+    "content": {
+      "fa": [
+        "النگوهاتون نشکنه رمبوها!!!!!!",
+        "(حق دارن! خاک ایران که طوفان شن داره! آب‌هاش کوسه داره! یحتمل، آفتابش هم حر جهنمه که باید ضدآفتاب بیارن!)",
+        "#مرگ_بر_آمریکا‌",
+        "#مرگ_بر_اسرائیل‌",
+        "#مرگ_بر_سازشگر‌"
+      ]
+    },
+    "media": [
+      {
+        "type": "image",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/1f19e38170134aac8a5397eff5a26302",
+        "caption": {
+          "fa": "کرم ضد آفتاب"
+        }
+      },
+      {
+        "type": "image",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/c2037a7c7ff348b481e4e416295bb6d2",
+        "caption": {
+          "fa": "ضدآفتاب غنیمتی آمریکایی"
+        }
+      }
+    ]
+  },
+  {
+    "id": "181",
+    "platform": "virasty",
+    "date": "2026-04-05",
+    "url": "https://virasty.com/khoshmard/1775397816996422506",
+    "content": {
+      "fa": [
+        "حروم‌زاده خودتی و هفت جد و آبات!",
+        "سگ کله‌زرد!",
+        "#مرگ_بر_آمریکا",
+        "#مرگ_بر_اسرائیل",
+        "#مرگ_بر_سازشگر"
+      ]
+    }
+  },
+  {
+    "id": "180",
+    "platform": "virasty",
+    "date": "2026-05-04",
+    "url": "https://virasty.com/khoshmard/1775393302337112653",
+    "content": {
+      "fa": [
+        "سگ ایرانی برای اجنبی واق واق می‌کنه!",
+        "وطن‌فروش ایرانی برای اجنبی دم تکون می‌ده!",
+        "#ایران_قوی",
+        "#مرگ_بر_آمریکا",
+        "#مرگ_بر_اسرائیل",
+        "#مرگ‌_بر_سازشگر"
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/f19c8952625b449091396a87ac7e8003",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/11e1a08beb68413a916e3c5bf48ad4a3",
+        "caption": {
+          "fa": "واق واق سگ ایرانی به هواگرد آمریکایی"
+        }
+      }
+    ]
+  },
+  {
     "id": 302,
     "platform": "linkedin",
     "date": "2025-02-20",
     "url": "https://linkedin.com/in/yourprofile/posts/987654",
     "content": {
-      "en": "Thrilled to share our new edge AI deployment on ESP32 – full tutorial coming soon."
+      "en": [
+        "Thrilled to share our new edge AI deployment on ESP32 – full tutorial coming soon."
+      ]
     }
   },
   {
@@ -201,8 +446,12 @@
     "date": "2025-01-10",
     "url": "https://twitter.com/yourhandle/status/1111111111",
     "content": {
-      "en": "RF PCB design tip: always simulate your impedance matching before fabrication. Saved me hours of debugging!",
-      "fa": "نکته طراحی PCB فرکانس بالا: همیشه تطبیق امپدانس را قبل از ساخت شبیه‌سازی کنید. ساعت‌ها دیباگ را ذخیره کرد!"
+      "en": [
+        "RF PCB design tip: always simulate your impedance matching before fabrication. Saved me hours of debugging!"
+      ],
+      "fa": [
+        "نکته طراحی PCB فرکانس بالا: همیشه تطبیق امپدانس را قبل از ساخت شبیه‌سازی کنید. ساعت‌ها دیباگ را ذخیره کرد!"
+      ]
     }
   }
 ]
