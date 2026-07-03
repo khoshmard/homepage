@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Manager — Offline Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface-2: #1a1a26;
+            --surface-3: #222230;
+            --accent: #6c5ce7;
+            --accent-2: #00cec9;
+            --text: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            --border: #252535;
+            --radius: 12px;
+            --transition: 0.2s ease;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height:100vh;
+        }
+        .container { max-width:1000px; margin:0 auto; }
+        h1 { font-size:2rem; font-weight:800; letter-spacing:-1px; margin-bottom:8px; }
+        .subtitle { color:var(--text-secondary); margin-bottom:24px; }
+        .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; align-items:center; }
+        button {
+            background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+            padding:10px 18px; border-radius:50px; font-size:0.85rem; font-weight:600;
+            cursor:pointer; transition:var(--transition); display:inline-flex; align-items:center; gap:6px;
+        }
+        button:hover { border-color:var(--accent); background:var(--surface-3); }
+        button.accent { background:var(--accent); border-color:var(--accent); color:#fff; }
+        button.accent:hover { background:#7c6ff7; box-shadow:0 0 20px rgba(108,92,231,0.4); }
+
+        .post-list { display:flex; flex-direction:column; gap:12px; }
+        .post-card {
+            background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+            padding:16px; transition:var(--transition);
+        }
+        .post-header { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+        .post-header .row-num { font-weight:800; color:var(--accent); font-size:1.1rem; min-width:35px; }
+        .post-header .title { font-weight:700; color:var(--text); flex:1; }
+        .post-header .date { font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--text-secondary); }
+        .post-header .actions { display:flex; gap:6px; align-items:center; }
+        .post-header .actions button { padding:6px 10px; font-size:0.75rem; }
+        .post-header .move-group input { width:50px; padding:6px; border-radius:6px; border:1px solid var(--border); background:var(--surface-3); color:var(--text); font-size:0.8rem; text-align:center; margin:0; }
+
+        .post-details { display:none; margin-top:12px; border-top:1px solid var(--border); padding-top:12px; }
+        .post-details.open { display:block; }
+        label { font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px; }
+        input, textarea {
+            width:100%; background:var(--surface-3); border:1px solid var(--border); color:var(--text);
+            padding:8px 12px; border-radius:6px; font-family:'JetBrains Mono', monospace; font-size:0.85rem; margin-bottom:10px;
+        }
+        textarea { resize:vertical; min-height:60px; }
+
+        /* Rich editor */
+        .editor-toolbar {
+            display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px; background:var(--surface-2); padding:6px; border-radius:6px;
+        }
+        .editor-toolbar button {
+            padding:4px 8px; font-size:0.75rem; background:transparent; border:1px solid transparent; color:var(--text-secondary);
+        }
+        .editor-toolbar button:hover { border-color:var(--border); background:var(--surface-3); }
+        .editor-toolbar button.active { color:var(--accent-2); }
+        .rich-editor {
+            min-height:150px; max-height:400px; overflow-y:auto; background:var(--surface-3); border:1px solid var(--border);
+            border-radius:6px; padding:12px; font-family:'Inter', sans-serif; font-size:0.9rem; line-height:1.6;
+            color:var(--text); outline:none; margin-bottom:10px;
+        }
+        .rich-editor:focus { border-color:var(--accent); }
+
+        .details-save-btn { text-align:right; margin-top:12px; }
+
+        /* Toast */
+        #toast-container {
+            position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+            z-index:9999; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none;
+        }
+        .toast {
+            background:rgba(18,18,26,0.85); border:1px solid var(--border); color:var(--text);
+            padding:12px 24px; border-radius:50px; font-size:0.9rem; font-weight:500;
+            backdrop-filter:blur(12px); box-shadow:0 8px 32px rgba(0,0,0,0.4);
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards; white-space:nowrap;
+        }
+        @keyframes toastIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes toastOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(20px); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📝 Blog Manager</h1>
+    <p class="subtitle">Open your <code>blog/</code> folder to edit posts offline</p>
+    <div class="toolbar">
+        <button id="openFolderBtn">📂 Open Blog Folder</button>
+        <button id="addPostBtn" disabled>➕ New Post</button>
+    </div>
+    <div class="post-list" id="postList"></div>
+</div>
+<div id="toast-container"></div>
+
+<script>
+    let blogDirHandle = null;
+    let postsIndex = [];               // from index.json
+    let currentPostCache = {};        // stores fetched post content by id
+
+    const postListEl = document.getElementById('postList');
+    const openFolderBtn = document.getElementById('openFolderBtn');
+    const addPostBtn = document.getElementById('addPostBtn');
+
+    // ─── Toast ───
+    function toast(msg) {
+        const container = document.getElementById('toast-container');
+        const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+        container.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    // ─── File helpers ───
+    async function readJSON(fileHandle) {
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        return JSON.parse(text);
+    }
+    async function writeJSON(fileHandle, data) {
+        const cleaned = cleanObject(data);
+        const json = JSON.stringify(cleaned, null, 2);
+        const writable = await fileHandle.createWritable();
+        await writable.write(json);
+        await writable.close();
+    }
+    function cleanObject(obj) {
+        if (Array.isArray(obj)) {
+            const cleaned = obj.map(cleanObject).filter(item => {
+                if (item === null || item === undefined) return false;
+                if (typeof item === 'object' && Object.keys(item).length === 0) return false;
+                return true;
+            });
+            return cleaned.length ? cleaned : undefined;
+        } else if (obj && typeof obj === 'object') {
+            const cleaned = {};
+            for (const [key, value] of Object.entries(obj)) {
+                const cleanedValue = cleanObject(value);
+                if (cleanedValue !== undefined && !(typeof cleanedValue === 'string' && cleanedValue === '')) {
+                    cleaned[key] = cleanedValue;
+                }
+            }
+            return Object.keys(cleaned).length ? cleaned : undefined;
+        }
+        return obj;
+    }
+
+    // ─── Open blog folder ───
+    async function openFolder() {
+        try {
+            blogDirHandle = await window.showDirectoryPicker({ id: 'blogFolder' });
+            // Load index.json
+            let indexHandle;
+            try { indexHandle = await blogDirHandle.getFileHandle('index.json'); }
+            catch { throw new Error('index.json not found in folder.'); }
+            postsIndex = await readJSON(indexHandle);
+            addPostBtn.disabled = false;
+            toast(`Loaded ${postsIndex.length} posts.`);
+            renderPostList();
+        } catch (err) {
+            if (err.name !== 'AbortError') alert('Error: ' + err.message);
+        }
+    }
+
+    // ─── Render post list ───
+    function renderPostList() {
+        postListEl.innerHTML = postsIndex.map((post, idx) => {
+            const rowNum = idx+1;
+            const titleEn = post.title?.en || post.title?.fa || 'Untitled';
+            const date = post.date || '';
+            return `
+            <div class="post-card">
+                <div class="post-header">
+                    <span class="row-num">#${rowNum}</span>
+                    <span class="title">${titleEn}</span>
+                    <span class="date">${date}</span>
+                    <button onclick="toggleDetails(${idx})">🔍 Details</button>
+                    <div class="actions">
+                        <div class="move-group">
+                            <input type="number" min="1" max="${postsIndex.length}" id="move-${idx}" value="${rowNum}">
+                            <button onclick="movePost(${idx}, document.getElementById('move-${idx}').value)">Go</button>
+                        </div>
+                        <button onclick="deletePost(${idx})">🗑️</button>
+                    </div>
+                </div>
+                <div class="post-details" id="details-${idx}"></div>
+            </div>`;
+        }).join('');
+    }
+
+    // ─── Toggle details (lazy load) ───
+    async function toggleDetails(idx) {
+        const detailsDiv = document.getElementById(`details-${idx}`);
+        if (!detailsDiv) return;
+        if (detailsDiv.classList.contains('open')) {
+            detailsDiv.classList.remove('open');
+            return;
+        }
+        // Load post content if not cached
+        const postMeta = postsIndex[idx];
+        if (!currentPostCache[postMeta.id]) {
+            try {
+                const fileHandle = await blogDirHandle.getFileHandle(`post-${postMeta.id}.json`);
+                currentPostCache[postMeta.id] = await readJSON(fileHandle);
+            } catch (e) {
+                toast('Failed to load post file.');
+                return;
+            }
+        }
+        const postData = currentPostCache[postMeta.id];
+        // Build details form
+        detailsDiv.innerHTML = buildDetailsForm(idx, postMeta, postData);
+        detailsDiv.classList.add('open');
+        // Init rich editors
+        initRichEditor(`editor-en-${idx}`, postData.content?.en || '');
+        initRichEditor(`editor-fa-${idx}`, postData.content?.fa || '');
+    }
+
+    function buildDetailsForm(idx, postMeta, postData) {
+        return `
+        <label>ID</label>
+        <input type="text" value="${postMeta.id}" onchange="updateMeta(${idx}, 'id', this.value)">
+        <label>Date (YYYY-MM-DD)</label>
+        <input type="date" value="${postMeta.date}" onchange="updateMeta(${idx}, 'date', this.value)">
+        <label>Icon</label>
+        <input type="text" value="${postMeta.icon || ''}" onchange="updateMeta(${idx}, 'icon', this.value)">
+        <label>Title (English)</label>
+        <input type="text" value="${postMeta.title?.en || ''}" onchange="updateMetaTitle(${idx}, 'en', this.value)">
+        <label>Title (Persian)</label>
+        <input type="text" value="${postMeta.title?.fa || ''}" onchange="updateMetaTitle(${idx}, 'fa', this.value)" style="direction:rtl; text-align:right;">
+        <label>Summary (English)</label>
+        <textarea onchange="updateMetaSummary(${idx}, 'en', this.value)">${postMeta.summary?.en || ''}</textarea>
+        <label>Summary (Persian)</label>
+        <textarea onchange="updateMetaSummary(${idx}, 'fa', this.value)" style="direction:rtl; text-align:right;">${postMeta.summary?.fa || ''}</textarea>
+        <label>Tags (comma separated)</label>
+        <input type="text" value="${(postMeta.tags || []).join(',')}" onchange="updateMeta(${idx}, 'tags', this.value.split(',').map(s=>s.trim()))">
+        <label>Content (English)</label>
+        <div class="editor-toolbar" data-editor="editor-en-${idx}">
+            <button data-command="bold"><b>B</b></button>
+            <button data-command="italic"><i>I</i></button>
+            <button data-command="underline"><u>U</u></button>
+            <button data-command="formatBlock" data-value="h1">H1</button>
+            <button data-command="formatBlock" data-value="h2">H2</button>
+            <button data-command="insertUnorderedList">• List</button>
+            <button data-command="insertOrderedList">1. List</button>
+            <button data-command="createLink">🔗</button>
+            <button data-command="insertImage">🖼️</button>
+        </div>
+        <div class="rich-editor" id="editor-en-${idx}" contenteditable="true"></div>
+        <label>Content (Persian)</label>
+        <div class="editor-toolbar" data-editor="editor-fa-${idx}">
+            <!-- same buttons -->
+            <button data-command="bold"><b>B</b></button>
+            <button data-command="italic"><i>I</i></button>
+            <button data-command="underline"><u>U</u></button>
+            <button data-command="formatBlock" data-value="h1">H1</button>
+            <button data-command="formatBlock" data-value="h2">H2</button>
+            <button data-command="insertUnorderedList">• List</button>
+            <button data-command="insertOrderedList">1. List</button>
+            <button data-command="createLink">🔗</button>
+            <button data-command="insertImage">🖼️</button>
+        </div>
+        <div class="rich-editor" id="editor-fa-${idx}" contenteditable="true" style="direction:rtl; text-align:right;"></div>
+        <div class="details-save-btn">
+            <button class="accent" onclick="savePost(${idx})">💾 Save Post</button>
+        </div>`;
+    }
+
+    // ─── Rich text editor logic ───
+    function initRichEditor(editorId, htmlContent) {
+        const editor = document.getElementById(editorId);
+        if (!editor) return;
+        editor.innerHTML = htmlContent;
+        const toolbar = document.querySelector(`.editor-toolbar[data-editor="${editorId}"]`);
+        if (!toolbar) return;
+        toolbar.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const command = btn.dataset.command;
+                const value = btn.dataset.value || null;
+                if (command === 'createLink') {
+                    const url = prompt('Enter URL:');
+                    if (url) document.execCommand('createLink', false, url);
+                } else if (command === 'insertImage') {
+                    const url = prompt('Enter image URL:');
+                    if (url) document.execCommand('insertImage', false, url);
+                } else {
+                    document.execCommand(command, false, value);
+                }
+                editor.focus();
+            });
+        });
+    }
+
+    // ─── Update metadata functions ───
+    function updateMeta(idx, field, value) { postsIndex[idx][field] = value; }
+    function updateMetaTitle(idx, lang, value) {
+        if (!postsIndex[idx].title) postsIndex[idx].title = {};
+        postsIndex[idx].title[lang] = value;
+    }
+    function updateMetaSummary(idx, lang, value) {
+        if (!postsIndex[idx].summary) postsIndex[idx].summary = {};
+        postsIndex[idx].summary[lang] = value;
+    }
+
+    // ─── Save a single post ───
+    async function savePost(idx) {
+        if (!blogDirHandle) return;
+        const postMeta = postsIndex[idx];
+        // Collect content from editors
+        const enEditor = document.getElementById(`editor-en-${idx}`);
+        const faEditor = document.getElementById(`editor-fa-${idx}`);
+        if (!enEditor || !faEditor) return;
+        const newContent = {};
+        const enHTML = enEditor.innerHTML.trim();
+        const faHTML = faEditor.innerHTML.trim();
+        if (enHTML) newContent.en = enHTML;
+        if (faHTML) newContent.fa = faHTML;
+
+        // Update cache and file
+        if (!currentPostCache[postMeta.id]) {
+            currentPostCache[postMeta.id] = { content: {} };
+        }
+        currentPostCache[postMeta.id].content = newContent;
+        // Also update readTime from meta or leave as is
+        // Write post file
+        try {
+            const fileHandle = await blogDirHandle.getFileHandle(`post-${postMeta.id}.json`);
+            await writeJSON(fileHandle, currentPostCache[postMeta.id]);
+            // Also save index.json (since meta may have changed)
+            const indexHandle = await blogDirHandle.getFileHandle('index.json');
+            await writeJSON(indexHandle, postsIndex);
+            toast('Post saved.');
+        } catch (err) {
+            toast('Save failed: ' + err.message);
+        }
+    }
+
+    // ─── Move / Delete / Add ───
+    async function movePost(idx, targetRow) {
+        const newIdx = parseInt(targetRow)-1;
+        if (isNaN(newIdx) || newIdx<0 || newIdx>=postsIndex.length || newIdx===idx) return;
+        const post = postsIndex.splice(idx,1)[0];
+        postsIndex.splice(newIdx,0,post);
+        renderPostList();
+        // Save index
+        if (blogDirHandle) {
+            const indexHandle = await blogDirHandle.getFileHandle('index.json');
+            await writeJSON(indexHandle, postsIndex);
+            toast('Reordered.');
+        }
+    }
+
+    async function deletePost(idx) {
+        if (!confirm('Delete this post?')) return;
+        const post = postsIndex[idx];
+        // Remove from index
+        postsIndex.splice(idx,1);
+        // Delete file
+        if (blogDirHandle) {
+            try { await blogDirHandle.removeEntry(`post-${post.id}.json`); } catch(e){}
+            const indexHandle = await blogDirHandle.getFileHandle('index.json');
+            await writeJSON(indexHandle, postsIndex);
+        }
+        delete currentPostCache[post.id];
+        renderPostList();
+        toast('Post deleted.');
+    }
+
+    async function addNewPost() {
+        const newId = Date.now().toString();
+        const newPost = {
+            id: newId,
+            icon: '📝',
+            date: new Date().toISOString().split('T')[0],
+            title: { en: 'New Post', fa: 'پست جدید' },
+            summary: { en: '', fa: '' },
+            tags: [],
+            readTime: { en: '5 min read', fa: '۵ دقیقه' }
+        };
+        postsIndex.unshift(newPost);
+        // Create post file
+        if (blogDirHandle) {
+            const fileHandle = await blogDirHandle.getFileHandle(`post-${newId}.json`, { create: true });
+            await writeJSON(fileHandle, { content: { en: '<p>Write here…</p>', fa: '<p>اینجا بنویسید…</p>' } });
+            const indexHandle = await blogDirHandle.getFileHandle('index.json');
+            await writeJSON(indexHandle, postsIndex);
+        }
+        renderPostList();
+        // Expand first post
+        document.getElementById(`details-0`)?.classList.add('open');
+        if (document.getElementById(`details-0`)) {
+            await toggleDetails(0);
+        }
+        toast('New post created.');
+    }
+
+    // ─── Init ───
+    openFolderBtn.addEventListener('click', openFolder);
+    addPostBtn.addEventListener('click', addNewPost);
+</script>
+</body>
+</html>
