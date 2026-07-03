@@ -8,6 +8,9 @@ const POSTS_PER_PAGE = 3;
 let allSocialPosts = [];
 let socialDisplayedCount = 0;
 const SOCIAL_PER_PAGE = 3;
+// Media modal state
+let currentMediaIndex = 0;
+let currentMediaItems = [];
 
 // ─── DOM elements ───
 const langToggle = document.getElementById('lang-toggle');
@@ -343,8 +346,23 @@ function highlightHashtags(text) {
 function getFilteredSocialPosts() {
     return allSocialPosts.filter(post => {
         const content = post.content?.[currentLang];
-        if (Array.isArray(content)) return content.some(line => line.trim() !== '');
-        return typeof content === 'string' && content.trim() !== '';
+        const hasContent = (typeof content === 'string' && content.trim() !== '') ||
+            (Array.isArray(content) && content.some(line => line.trim() !== ''));
+        const hasMedia = post.media && post.media.length > 0;
+        return hasContent || (hasMedia && !post.content?.en && !post.content?.fa);
+    });
+}
+
+function filterMediaByLanguage(mediaItems, lang) {
+    if (!mediaItems || !mediaItems.length) return [];
+    return mediaItems.filter(item => {
+        // If no caption object at all, show in all languages
+        if (!item.caption) return true;
+        // If caption object is empty, show in all languages
+        if (typeof item.caption === 'object' && !item.caption.en && !item.caption.fa) return true;
+        // Otherwise, require the caption to exist (non‑empty) in the current language
+        const captionForLang = item.caption[lang];
+        return captionForLang && captionForLang.trim() !== '';
     });
 }
 
@@ -374,8 +392,37 @@ function renderSocialNextPosts() {
         const platformData = iconMap[platform];
         const contentArray = post.content?.[lang] || post.content?.en || '';
         const contentText = Array.isArray(contentArray) ? contentArray.join('<br>') : contentArray;
+        const textHtml = contentText ? `<div class="social-content">${highlightHashtags(contentText)}</div>` : '';
+
+        // Filter media for the current language
+        const visibleMedia = post.media ? filterMediaByLanguage(post.media, lang) : [];
+        if (!contentText && visibleMedia.length === 0) return;  // skip rendering this post
+
         const card = document.createElement('div');
         card.className = `social-card ${platform}`;   // adds class for color border
+        if (post.media && post.media.length > 0 && !(post.content?.[lang] || post.content?.en)) {
+            card.classList.add('media-only');
+        }
+
+        // Build media gallery HTML (thumbnails)
+        let mediaHtml = '';
+        if (visibleMedia && visibleMedia.length) {
+            const mediaItems = visibleMedia.slice(0, 3);   // show first 3 thumbnails
+            const remaining = visibleMedia.length - 3;
+            mediaHtml = `<div class="social-media-gallery">
+                ${mediaItems.map(m => {
+                if (m.type === 'image') {
+                    return `<img src="${m.url}" alt="${m.alt || ''}" loading="lazy" class="social-thumb" data-index="${mediaItems.indexOf(m)}">`;
+                } else {
+                    return `<div class="social-thumb video-thumb" data-index="${mediaItems.indexOf(m)}" style="background-image:url(${m.thumbnail || ''})">
+                            <span class="play-icon">▶</span>
+                        </div>`;
+                }
+            }).join('')}
+                ${remaining > 0 ? `<div class="social-thumb more-overlay">+${remaining}</div>` : ''}
+            </div>`;
+        }
+
         card.innerHTML = `
             <div class="social-header">
                 <span class="social-platform-icon" style="color:${platformData.color}">
@@ -384,21 +431,43 @@ function renderSocialNextPosts() {
                 <span class="social-platform-name">(${lang === 'fa' ? platformData.nameFa : platformData.nameEn})</span>
                 <span class="social-date">${lang === 'fa' ? toJalali(post.date) : post.date}</span>
             </div>
-            <div class="social-content">${highlightHashtags(contentText)}</div>
+            ${textHtml}
+            ${mediaHtml}
             <a href="${post.url}" class="social-link" target="_blank" rel="noopener">
                 ${lang === 'en' ? 'View original' : 'مشاهده پست اصلی'} ↗
             </a>
         `;
-        card.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'A') {
-                window.open(post.url, '_blank');
-            }
+
+        // Attach click handlers for media
+        const thumbnails = card.querySelectorAll('.social-thumb, .more-overlay');
+        thumbnails.forEach((thumb, idx) => {
+            thumb.addEventListener('click', (e) => {
+                e.stopPropagation(); // don't open original link
+                if (thumb.classList.contains('more-overlay')) {
+                    // Show first of remaining images
+                    openMediaModal(post, 3);
+                } else {
+                    const index = parseInt(thumb.getAttribute('data-index'), 10);
+                    openMediaModal(post, index);
+                }
+            });
         });
+
+        // If media-only, the whole card click opens media (not the original link)
+        if (card.classList.contains('media-only')) {
+            card.addEventListener('click', (e) => {
+                // Only if click is not on the "View original" link
+                if (!e.target.closest('.social-link')) {
+                    openMediaModal(post, 0);
+                }
+            });
+        }
+
         socialPostsContainer.appendChild(card);
     });
 
     socialDisplayedCount += slice.length;
-    if (socialDisplayedCount >= allSocialPosts.length) {
+    if (socialDisplayedCount >= filtered.length) {
         socialLoadMoreBtn.style.display = 'none';
         socialNoMoreMsg.style.display = 'block';
     }
@@ -426,6 +495,99 @@ async function loadSocialSection() {
     }
     resetSocialPosts();
 }
+
+// ─── Media Lightbox ───
+function openMediaModal(post, index) {
+    currentMediaItems = post.media ? filterMediaByLanguage(post.media, currentLang) : [];
+    if(currentMediaItems.length === 0) return;
+    currentMediaIndex = index;
+    showMediaItem(currentMediaIndex);
+
+    // Hide other modal elements (title, body, tech)
+    if (modalIcon) modalIcon.style.display = 'none';
+    if (modalMeta) modalMeta.style.display = 'none';
+    if (modalTitle) modalTitle.style.display = 'none';
+    if (modalBody) modalBody.style.display = 'none';
+    if (modalTech) modalTech.style.display = 'none';
+    if (modalLink) modalLink.style.display = 'none';
+
+    const mediaContainer = document.getElementById('modal-media');
+    if (mediaContainer) mediaContainer.style.display = 'flex';
+    modalOverlay?.classList.add('active');
+}
+
+function showMediaItem(index) {
+    const mediaItem = currentMediaItems[index];
+    if (!mediaItem) return;
+
+    const mediaContent = document.getElementById('media-content');
+    const caption = document.getElementById('media-caption');
+    if (!mediaContent || !caption) return;
+
+    // Clear previous content
+    mediaContent.innerHTML = '';
+
+    // Caption (bilingual)
+    const lang = currentLang;
+    const captionText = (mediaItem.caption?.[lang]) || (mediaItem.caption?.en) || '';
+    caption.textContent = captionText;
+
+    if (mediaItem.type === 'image') {
+        const img = document.createElement('img');
+        img.src = mediaItem.url;
+        img.alt = mediaItem.alt || '';
+        img.loading = 'lazy';
+        mediaContent.appendChild(img);
+    } else if (mediaItem.type === 'video') {
+        // If it's a YouTube/Vimeo URL, embed iframe; else use <video>
+        if (mediaItem.url.includes('youtube.com/embed') || mediaItem.url.includes('vimeo.com/video')) {
+            const iframe = document.createElement('iframe');
+            iframe.src = mediaItem.url;
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('allow', 'autoplay; encrypted-media');
+            mediaContent.appendChild(iframe);
+        } else {
+            const video = document.createElement('video');
+            video.src = mediaItem.url;
+            video.controls = true;
+            video.style.maxWidth = '100%';
+            video.style.maxHeight = '60vh';
+            mediaContent.appendChild(video);
+        }
+    }
+
+    // Arrow visibility
+    const prevBtn = document.getElementById('media-prev');
+    const nextBtn = document.getElementById('media-next');
+    if (prevBtn) prevBtn.style.display = (currentMediaItems.length > 1 && index > 0) ? 'block' : 'none';
+    if (nextBtn) nextBtn.style.display = (currentMediaItems.length > 1 && index < currentMediaItems.length - 1) ? 'block' : 'none';
+}
+
+function closeMediaModal() {
+    const mediaContainer = document.getElementById('modal-media');
+    if (mediaContainer) mediaContainer.style.display = 'none';
+    // Restore modal elements (they stay hidden, but next project modal will show them)
+    modalOverlay?.classList.remove('active');
+    // Clean up any video playback
+    const mediaContent = document.getElementById('media-content');
+    if (mediaContent) mediaContent.innerHTML = '';
+}
+
+// Arrow navigation
+document.getElementById('media-prev')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (currentMediaIndex > 0) {
+        currentMediaIndex--;
+        showMediaItem(currentMediaIndex);
+    }
+});
+document.getElementById('media-next')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (currentMediaIndex < currentMediaItems.length - 1) {
+        currentMediaIndex++;
+        showMediaItem(currentMediaIndex);
+    }
+});
 
 // ─── Modal: project ───
 function openProjectModal(projectId) {
@@ -474,6 +636,17 @@ async function openBlogModal(postMeta) {
 
 function closeModal() {
     modalOverlay?.classList.remove('active');
+    // Also close media modal if active
+    if (document.getElementById('modal-media')?.style.display !== 'none') {
+        closeMediaModal();
+    }
+    // Restore modal elements visibility for next project modal
+    if (modalIcon) modalIcon.style.display = '';
+    if (modalMeta) modalMeta.style.display = '';
+    if (modalTitle) modalTitle.style.display = '';
+    if (modalBody) modalBody.style.display = '';
+    if (modalTech) modalTech.style.display = '';
+    if (modalLink) modalLink.style.display = '';
 }
 
 // ─── Navigation ───
