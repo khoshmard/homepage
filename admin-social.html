@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Social Posts Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface-2: #1a1a26;
+            --surface-3: #222230;
+            --accent: #6c5ce7;
+            --accent-2: #00cec9;
+            --text: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            --border: #252535;
+            --radius: 12px;
+            --transition: 0.2s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+        .subtitle { color: var(--text-secondary); margin-bottom: 24px; }
+        .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+        button {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        button:hover { border-color: var(--accent); background: var(--surface-3); }
+        button.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
+        button.accent:hover { background: #7c6ff7; box-shadow: 0 0 20px rgba(108,92,231,0.4); }
+        .post-list { display: flex; flex-direction: column; gap: 12px; }
+        .post-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            transition: var(--transition);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .post-header .row-num {
+            font-weight: 800;
+            color: var(--accent);
+            font-size: 1.1rem;
+            min-width: 35px;
+        }
+        .post-header .platform {
+            font-weight: 700;
+            text-transform: capitalize;
+            color: var(--accent-2);
+            min-width: 80px;
+        }
+        .post-header .date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .post-header .snippet {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+        .post-header .actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+        .post-header .actions button { padding: 6px 10px; font-size: 0.75rem; }
+        .post-header .move-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .post-header .move-group input {
+            width: 50px;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface-3);
+            color: var(--text);
+            font-size: 0.8rem;
+            text-align: center;
+            margin: 0;
+        }
+        .post-header .move-group button {
+            padding: 6px 8px;
+            font-size: 0.7rem;
+        }
+        .post-details { display: none; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+        .post-details.open { display: block; }
+        label { font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+        input, textarea {
+            width: 100%;
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        textarea { resize: vertical; min-height: 60px; }
+        .media-item {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .media-item input { flex: 1; min-width: 120px; margin-bottom: 0; }
+        .media-item button { padding: 4px 8px; font-size: 0.7rem; }
+        .add-media-btn { margin-top: 4px; }
+        .details-save-btn { margin-top: 12px; text-align: right; }
+
+        /* ── Toast container ── */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(18, 18, 26, 0.85);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+            pointer-events: auto;
+            white-space: nowrap;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📡 Social Posts Manager</h1>
+        <p class="subtitle">Edit, add, remove, and reorder posts from <code>social/index.json</code></p>
+
+        <div class="toolbar">
+            <button id="loadBtn">📂 Open JSON File</button>
+            <button id="saveBtn" class="accent" disabled>💾 Save to File</button>
+            <button id="downloadBtn" disabled>⬇️ Download JSON</button>
+            <button id="addBtn" disabled>➕ Add Post</button>
+        </div>
+
+        <div class="post-list" id="postList"></div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <script>
+        let fileHandle = null;
+        let posts = [];
+
+        const postList = document.getElementById('postList');
+        const loadBtn = document.getElementById('loadBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const addBtn = document.getElementById('addBtn');
+
+        // ─── Toast helper ───
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            container.appendChild(toast);
+            // Remove after animation (3s total)
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 3000);
+        }
+
+        // ─── Clean empty values recursively ───
+        function cleanObject(obj) {
+            if (Array.isArray(obj)) {
+                const cleaned = obj.map(item => cleanObject(item)).filter(item => {
+                    if (item === null || item === undefined) return false;
+                    if (typeof item === 'object' && Object.keys(item).length === 0) return false;
+                    return true;
+                });
+                return cleaned.length === 0 ? undefined : cleaned;
+            } else if (obj && typeof obj === 'object') {
+                const cleaned = {};
+                for (const [key, value] of Object.entries(obj)) {
+                    const cleanedValue = cleanObject(value);
+                    if (cleanedValue !== undefined && !(typeof cleanedValue === 'string' && cleanedValue === '')) {
+                        cleaned[key] = cleanedValue;
+                    }
+                }
+                return Object.keys(cleaned).length === 0 ? undefined : cleaned;
+            }
+            return obj;
+        }
+
+        // ─── File Handling ───
+        async function openFile() {
+            try {
+                [fileHandle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'JSON Files',
+                        accept: { 'application/json': ['.json'] }
+                    }],
+                });
+                const file = await fileHandle.getFile();
+                const text = await file.text();
+                posts = JSON.parse(text);
+                if (!Array.isArray(posts)) throw new Error('Invalid format: expected array');
+
+                posts.forEach(post => {
+                    if (!post.content || typeof post.content !== 'object') post.content = {};
+                    if (post.content.en && !Array.isArray(post.content.en)) post.content.en = [post.content.en];
+                    if (post.content.fa && !Array.isArray(post.content.fa)) post.content.fa = [post.content.fa];
+                });
+
+                saveBtn.disabled = false;
+                downloadBtn.disabled = false;
+                addBtn.disabled = false;
+                showToast(`Loaded ${posts.length} posts.`);
+                renderPosts();
+            } catch (err) {
+                if (err.name !== 'AbortError') alert('Error loading file: ' + err.message);
+            }
+        }
+
+        async function saveFile() {
+            if (!fileHandle) return;
+            try {
+                const cleaned = posts.map(post => {
+                    let p = { ...post };
+                    if (p.content) {
+                        const en = p.content.en || [];
+                        const fa = p.content.fa || [];
+                        p.content = {};
+                        if (en.length > 0) p.content.en = en;
+                        if (fa.length > 0) p.content.fa = fa;
+                        if (Object.keys(p.content).length === 0) delete p.content;
+                    }
+                    return cleanObject(p);
+                }).filter(post => post !== undefined);
+
+                const json = JSON.stringify(cleaned, null, 2);
+                const writable = await fileHandle.createWritable();
+                await writable.write(json);
+                await writable.close();
+                showToast('Saved successfully!');
+            } catch (err) {
+                alert('Save failed: ' + err.message);
+            }
+        }
+
+        function downloadFile() {
+            const cleaned = posts.map(post => {
+                let p = { ...post };
+                if (p.content) {
+                    const en = p.content.en || [];
+                    const fa = p.content.fa || [];
+                    p.content = {};
+                    if (en.length > 0) p.content.en = en;
+                    if (fa.length > 0) p.content.fa = fa;
+                    if (Object.keys(p.content).length === 0) delete p.content;
+                }
+                return cleanObject(p);
+            }).filter(post => post !== undefined);
+            const blob = new Blob([JSON.stringify(cleaned, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Downloaded — replace your social/index.json with this file.');
+        }
+
+        // ─── Snippet ───
+        function getSnippet(post) {
+            const lines = (post.content?.en?.length ? post.content.en : post.content?.fa) || [];
+            const firstLine = lines[0] || '';
+            return firstLine.substring(0, 60) + (firstLine.length > 60 ? '…' : '');
+        }
+
+        // ─── Render ───
+        function renderPosts() {
+            postList.innerHTML = posts.map((post, idx) => {
+                const platform = post.platform || 'unknown';
+                const date = post.date || '';
+                const contentEn = (post.content?.en || []).join('\n');
+                const contentFa = (post.content?.fa || []).join('\n');
+                const mediaCount = post.media?.length || 0;
+                const rowNum = idx + 1;
+                const snippet = getSnippet(post);
+
+                let mediaHtml = '';
+                if (post.media) {
+                    mediaHtml = post.media.map((m, mi) => `
+                        <div class="media-item">
+                            <input type="text" value="${m.type || 'image'}" placeholder="type" onchange="updateMedia(${idx}, ${mi}, 'type', this.value)">
+                            <input type="text" value="${m.url || ''}" placeholder="URL" onchange="updateMedia(${idx}, ${mi}, 'url', this.value)">
+                            <input type="text" value="${m.thumbnail || ''}" placeholder="thumbnail (video)" onchange="updateMedia(${idx}, ${mi}, 'thumbnail', this.value)">
+                            <input type="text" value="${m.caption?.en || ''}" placeholder="caption en" onchange="updateMediaCaption(${idx}, ${mi}, 'en', this.value)">
+                            <input type="text" value="${m.caption?.fa || ''}" placeholder="caption fa" style="direction: rtl; text-align: right;" onchange="updateMediaCaption(${idx}, ${mi}, 'fa', this.value)">
+                            <button onclick="removeMedia(${idx}, ${mi})">🗑️</button>
+                        </div>
+                    `).join('');
+                }
+                mediaHtml += `<button class="add-media-btn" onclick="addMedia(${idx})">+ Add Media</button>`;
+
+                return `
+                <div class="post-card">
+                    <div class="post-header">
+                        <span class="row-num">#${rowNum}</span>
+                        <span class="platform">${platform}</span>
+                        <span class="date">${date}</span>
+                        <span class="snippet" title="${snippet}">${snippet}</span>
+                        <button onclick="toggleDetails(${idx})">🔍 Details</button>
+                        <div class="actions">
+                            <div class="move-group">
+                                <input type="number" min="1" max="${posts.length}" placeholder="Row" id="move-target-${idx}" value="${rowNum}" style="width:60px;">
+                                <button onclick="movePostToPosition(${idx}, document.getElementById('move-target-${idx}').value)">Go</button>
+                            </div>
+                            <button onclick="deletePost(${idx})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="post-details" id="details-${idx}">
+                        <label>ID</label>
+                        <input type="text" value="${post.id || ''}" onchange="updatePost(${idx}, 'id', this.value)">
+                        <label>Platform</label>
+                        <input type="text" value="${platform}" onchange="updatePost(${idx}, 'platform', this.value)">
+                        <label>Date (YYYY-MM-DD)</label>
+                        <input type="date" value="${date}" onchange="updatePost(${idx}, 'date', this.value)">
+                        <label>URL</label>
+                        <input type="text" value="${post.url || ''}" onchange="updatePost(${idx}, 'url', this.value)">
+                        <label>Content (English)</label>
+                        <textarea onchange="updateContent(${idx}, 'en', this.value)">${contentEn}</textarea>
+                        <label>Content (Persian)</label>
+                        <textarea style="direction: rtl; text-align: right;" onchange="updateContent(${idx}, 'fa', this.value)">${contentFa}</textarea>
+                        <label>Media (${mediaCount} items)</label>
+                        ${mediaHtml}
+                        <div class="details-save-btn">
+                            <button class="accent" onclick="saveFile()">💾 Save</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ─── Post operations ───
+        function updatePost(idx, field, value) { posts[idx][field] = value; }
+        function updateContent(idx, langKey, value) {
+            if (!posts[idx].content) posts[idx].content = {};
+            posts[idx].content[langKey] = value.split('\n');
+        }
+        function updateMedia(idx, mediaIdx, field, value) { posts[idx].media[mediaIdx][field] = value; }
+        function updateMediaCaption(idx, mediaIdx, langKey, value) {
+            if (!posts[idx].media[mediaIdx].caption) posts[idx].media[mediaIdx].caption = {};
+            posts[idx].media[mediaIdx].caption[langKey] = value;
+        }
+        function addMedia(idx) {
+            if (!posts[idx].media) posts[idx].media = [];
+            posts[idx].media.push({ type: 'image', url: '', thumbnail: '', caption: { en: '', fa: '' } });
+            renderPosts();
+            document.getElementById(`details-${idx}`).classList.add('open');
+        }
+        function removeMedia(idx, mediaIdx) {
+            posts[idx].media.splice(mediaIdx, 1);
+            if (posts[idx].media.length === 0) delete posts[idx].media;
+            renderPosts();
+            document.getElementById(`details-${idx}`).classList.add('open');
+        }
+        function deletePost(idx) {
+            if (confirm('Delete this post?')) {
+                posts.splice(idx, 1);
+                renderPosts();
+            }
+        }
+        function addNewPost() {
+            const newPost = {
+                id: Date.now().toString(),
+                platform: 'twitter',
+                date: new Date().toISOString().split('T')[0],
+                url: '',
+                content: { en: [], fa: [] },
+                media: []
+            };
+            posts.unshift(newPost);
+            renderPosts();
+            document.getElementById(`details-0`).classList.add('open');
+        }
+        function movePostToPosition(idx, targetRow) {
+            const targetIdx = parseInt(targetRow, 10) - 1;
+            if (isNaN(targetIdx) || targetIdx < 0 || targetIdx >= posts.length || targetIdx === idx) {
+                alert('Invalid position.');
+                return;
+            }
+            const post = posts.splice(idx, 1)[0];
+            posts.splice(targetIdx, 0, post);
+            renderPosts();
+        }
+        function toggleDetails(idx) {
+            const details = document.getElementById(`details-${idx}`);
+            if (details) details.classList.toggle('open');
+        }
+
+        // ─── Event listeners ───
+        loadBtn.addEventListener('click', openFile);
+        saveBtn.addEventListener('click', saveFile);
+        downloadBtn.addEventListener('click', downloadFile);
+        addBtn.addEventListener('click', addNewPost);
+    </script>
+</body>
+</html>
