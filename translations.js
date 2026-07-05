@@ -31,11 +31,20 @@ function toJalali(dateStr) {
     return `${toPersianDigits(jd)}/${monthNames[jm]}/${toPersianDigits(jy)}`;
 }
 
+function getCurrentJalaliYear() {
+    const dateStr = new Date().toISOString().split('T')[0];
+    const fullJalali = toJalali(dateStr);
+    const parts = fullJalali.split('/');
+    return parts[parts.length - 1];
+}
+
 // ─── Core language setter ───
 function setLanguage(lang) {
     localStorage.setItem('lang', lang);
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+
+    window.appLang = lang;
 
     // Update toggle button text (if present)
     const btn = document.getElementById('lang-toggle');

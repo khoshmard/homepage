@@ -1,5 +1,4 @@
 // ─── Global state ───
-let currentLang = localStorage.getItem('lang') || 'en';
 let portfolioData = {};
 let postsIndex = [];
 let postsCache = {};
@@ -125,9 +124,9 @@ async function loadMainData() {
 
 // ─── Render main sections ───
 function renderMainPage() {
-    setLanguage(currentLang);
+    const lang = window.appLang || localStorage.getItem('lang') || 'en';
+    setLanguage(lang);
     const data = portfolioData;
-    const lang = currentLang;
 
     // i18n texts
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -197,6 +196,9 @@ function renderMainPage() {
                 </a>`;
         }).join('');
     }
+
+    resetBlogPosts();
+    resetSocialPosts();
 }
 
 // ─── Section visibility ───
@@ -251,10 +253,10 @@ function renderBlogNextPosts() {
         blogNoMoreMsg.style.display = 'block';
         return;
     }
-    const lang = currentLang;
+    const lang = window.appLang;
     slice.forEach(post => {
         const card = document.createElement('a');
-        const postUrl = `blog/post-${post.id}.html`;   // static file URL
+        const postUrl = `/blog/post-${post.id}.html`;   // static file URL
         card.href = postUrl;
         card.className = 'project-card blog-card';
         card.dataset.id = post.id;
@@ -269,7 +271,7 @@ function renderBlogNextPosts() {
             <h3>${(post.title?.[lang]) || (post.title?.en) || ''}</h3>
             <p>${(post.summary?.[lang]) || (post.summary?.en) || ''}</p>
             <div class="project-tech">${(post.tags || []).map(tag => `<span>${tag}</span>`).join('')}</div>
-            <span class="project-link">${lang === 'en' ? 'Read more' : 'ادامه مطلب'} →</span>
+            <span class="project-link">${lang === 'en' ? 'Read more  →' : 'ادامه مطلب ←'}</span>
         `;
         card.addEventListener('click', (e) => {
             e.preventDefault();
@@ -302,7 +304,7 @@ function highlightHashtags(text) {
 // Get filtered social posts for current language
 function getFilteredSocialPosts() {
     return allSocialPosts.filter(post => {
-        const content = post.content?.[currentLang];
+        const content = post.content?.[window.appLang];
         const hasContent = (typeof content === 'string' && content.trim() !== '') ||
             (Array.isArray(content) && content.some(line => line.trim() !== ''));
         const hasMedia = post.media && post.media.length > 0;
@@ -343,7 +345,7 @@ function renderSocialNextPosts() {
         return;
     }
 
-    const lang = currentLang;
+    const lang = window.appLang;
     slice.forEach(post => {
         const platform = post.platform || 'twitter';
         const platformData = iconMap[platform];
@@ -437,7 +439,7 @@ function resetSocialPosts() {
     if (filtered.length === 0) {
         socialLoadMoreBtn.style.display = 'none';
         socialNoMoreMsg.style.display = 'block';
-        socialNoMoreMsg.textContent = currentLang === 'en' ? 'No posts available.' : 'پستی موجود نیست.';
+        socialNoMoreMsg.textContent = window.appLang === 'en' ? 'No posts available.' : 'پستی موجود نیست.';
         return;
     }
     socialLoadMoreBtn.style.display = 'inline-block';
@@ -455,7 +457,7 @@ async function loadSocialSection() {
 
 // ─── Media Lightbox ───
 function openMediaModal(post, index) {
-    currentMediaItems = post.media ? filterMediaByLanguage(post.media, currentLang) : [];
+    currentMediaItems = post.media ? filterMediaByLanguage(post.media, window.appLang) : [];
     if(currentMediaItems.length === 0) return;
     currentMediaIndex = index;
     showMediaItem(currentMediaIndex);
@@ -485,7 +487,7 @@ function showMediaItem(index) {
     mediaContent.innerHTML = '';
 
     // Caption (bilingual)
-    const lang = currentLang;
+    const lang = window.appLang;
     const captionText = (mediaItem.caption?.[lang]) || (mediaItem.caption?.en) || '';
     caption.textContent = captionText;
 
@@ -550,7 +552,7 @@ document.getElementById('media-next')?.addEventListener('click', (e) => {
 function openProjectModal(projectId) {
     const project = portfolioData.projects?.find(p => p.id === projectId);
     if (!project) return;
-    const proj = project[currentLang] || project.en;
+    const proj = project[window.appLang] || project.en;
     if (modalIcon) modalIcon.textContent = project.icon;
     if (modalMeta) modalMeta.textContent = '';
     if (modalTitle) modalTitle.textContent = proj.title;
@@ -560,7 +562,7 @@ function openProjectModal(projectId) {
     if (modalLink) {
         if (link && link !== '#') {
             modalLink.href = link;
-            modalLink.textContent = currentLang === 'en' ? 'Learn more →' : 'اطلاعات بیشتر ←';
+            modalLink.textContent = window.appLang === 'en' ? 'Learn more →' : 'اطلاعات بیشتر ←';
             modalLink.style.display = 'inline-flex';
         } else {
             modalLink.style.display = 'none';
@@ -583,9 +585,9 @@ async function openBlogModal(postMeta) {
     }
     const postData = postsCache[postId];
     if (modalIcon) modalIcon.textContent = postMeta.icon || '📝';
-    if (modalMeta) modalMeta.textContent = `${currentLang === 'fa' ? toJalali(postMeta.date) : postMeta.date}  ·  ${(postData.readTime?.[currentLang]) || (postData.readTime?.en) || ''}`;
-    if (modalTitle) modalTitle.textContent = (postData.title?.[currentLang]) || (postData.title?.en) || '';
-    if (modalBody) modalBody.innerHTML = (postData.content?.[currentLang]) || (postData.content?.en) || '';
+    if (modalMeta) modalMeta.textContent = `${window.appLang === 'fa' ? toJalali(postMeta.date) : postMeta.date}  ·  ${(postData.readTime?.[window.appLang]) || (postData.readTime?.en) || ''}`;
+    if (modalTitle) modalTitle.textContent = (postData.title?.[window.appLang]) || (postData.title?.en) || '';
+    if (modalBody) modalBody.innerHTML = (postData.content?.[window.appLang]) || (postData.content?.en) || '';
     if (modalTech) modalTech.innerHTML = '';
     if (modalLink) modalLink.style.display = 'none';
     modalOverlay?.classList.add('active');
