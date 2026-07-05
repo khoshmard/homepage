@@ -15,19 +15,7 @@
     <div class="bg-orb bg-orb--3"></div>
 
     <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <a href="#" class="nav-logo" id="nav-home">◈ <span>Khoshmard</span></a>
-            <ul class="nav-links">
-                <li><a href="#works" class="nav-link" data-target="works" data-i18n="navWorks">Works</a></li>
-                <li><a href="#blog" class="nav-link" data-target="blog" data-i18n="navBlog">Blog</a></li>
-                <li><a href="#social" class="nav-link" data-target="social" data-i18n="navSocial">Social</a></li>
-                <li><a href="#skills" class="nav-link" data-target="skills" data-i18n="navSkills">Skills</a></li>
-                <li><a href="#contact" class="nav-link nav-cta" data-target="contact" data-i18n="navContact">Reach Me</a></li>
-            </ul>
-            <button id="lang-toggle" class="lang-btn" aria-label="Switch language">🇮🇷 فارسی</button>
-        </div>
-    </nav>
+    <nav class="navbar" id="main-navbar"></nav>
 
     <!-- Hero (visible by default) -->
     <header class="hero" id="hero-section">
@@ -100,11 +88,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>© <span id="footer-year"></span> — <span data-i18n="footerText">Built with passion. All rights reserved.</span></p>
-        </div>
-    </footer>
+    <footer class="footer" id="main-footer"></footer>
 
     <!-- Modal (shared for projects and blog posts) -->
     <div class="modal-overlay" id="modal-overlay">
@@ -125,6 +109,8 @@
         </div>
     </div>
 
+    <script src="translations.js"></script>
+    <script src="components.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -42,7 +42,6 @@ const modalTitle = document.getElementById('modal-title');
 const modalBody = document.getElementById('modal-body');
 const modalTech = document.getElementById('modal-tech');
 const modalLink = document.getElementById('modal-link');
-const footerYear = document.getElementById('footer-year');
 
 const iconMap = {
     email: {
@@ -107,58 +106,11 @@ function getIconSVG(iconKey, size = 20, color = null) {
     return svg;
 }
 
-// ─── Convert a number to Persian digits ───
-function toPersianDigits(num) {
-    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    return String(num).replace(/\d/g, d => persianDigits[d]);
-}
-
-// ─── Jalali (Shamsi) date converter ───
-function toJalali(dateStr) {
-    // dateStr format: "YYYY-MM-DD"
-    const [gy, gm, gd] = dateStr.split('-').map(Number);
-    // Convert Gregorian to Jalali
-    const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-    let gy2 = (gm > 2) ? (gy + 1) : gy;
-    let days = 355666 + (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) + gd + g_d_m[gm - 1];
-    let jy = -1595 + (33 * Math.floor(days / 12053));
-    days %= 12053;
-    jy += 4 * Math.floor(days / 1461);
-    days %= 1461;
-    if (days > 365) {
-        jy += Math.floor((days - 1) / 365);
-        days = (days - 1) % 365;
-    }
-    let jm, jd;
-    if (days < 186) {
-        jm = 1 + Math.floor(days / 31);
-        jd = 1 + (days % 31);
-    } else {
-        jm = 7 + Math.floor((days - 186) / 30);
-        jd = 1 + ((days - 186) % 30);
-    }
-    // Persian month names
-    const monthNames = [
-        '', 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-        'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-    ];
-    return `${toPersianDigits(jd)}/${monthNames[jm]}/${toPersianDigits(jy)}`;
-}
-
-// ─── Language ───
-function applyLanguage() {
-    document.documentElement.lang = currentLang === 'fa' ? 'fa' : 'en';
-    document.documentElement.dir = currentLang === 'fa' ? 'rtl' : 'ltr';
-    langToggle.textContent = currentLang === 'en' ? '🇮🇷 فارسی' : '🇬🇧 English';
-    localStorage.setItem('lang', currentLang);
-}
-
 // ─── Load main data ───
 async function loadMainData() {
     try {
         const res = await fetch('data.json');
         portfolioData = await res.json();
-        applyLanguage();
         renderMainPage();
     } catch (err) {
         console.error(err);
@@ -173,6 +125,7 @@ async function loadMainData() {
 
 // ─── Render main sections ───
 function renderMainPage() {
+    setLanguage(currentLang);
     const data = portfolioData;
     const lang = currentLang;
 
@@ -244,8 +197,6 @@ function renderMainPage() {
                 </a>`;
         }).join('');
     }
-
-    footerYear.textContent = new Date().getFullYear();
 }
 
 // ─── Section visibility ───
@@ -302,9 +253,12 @@ function renderBlogNextPosts() {
     }
     const lang = currentLang;
     slice.forEach(post => {
-        const card = document.createElement('div');
+        const card = document.createElement('a');
+        const postUrl = `blog/post-${post.id}.html`;   // static file URL
+        card.href = postUrl;
         card.className = 'project-card blog-card';
         card.dataset.id = post.id;
+        card.style = 'text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 14px;';
         card.innerHTML = `
             <div class="project-icon">${post.icon || '📝'}</div>
             <div class="blog-meta">
@@ -317,7 +271,10 @@ function renderBlogNextPosts() {
             <div class="project-tech">${(post.tags || []).map(tag => `<span>${tag}</span>`).join('')}</div>
             <span class="project-link">${lang === 'en' ? 'Read more' : 'ادامه مطلب'} →</span>
         `;
-        card.addEventListener('click', () => openBlogModal(post));
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            openBlogModal(post);
+        });
         blogPostsContainer.appendChild(card);
     });
     blogDisplayedCount += slice.length;
@@ -650,47 +607,38 @@ function closeModal() {
 }
 
 // ─── Navigation ───
-document.querySelectorAll('.nav-link, #nav-home').forEach(link => {
-    link.addEventListener('click', e => {
-        e.preventDefault();
-        const target = link.dataset.target || 'home';
-        const blogVisible = blogSection && blogSection.style.display === 'block';
-        const socialVisible = socialSection && socialSection.style.display === 'block';
+// Delegated navigation handler (works with dynamically added navbar)
+document.addEventListener('click', e => {
+    const link = e.target.closest('.nav-link, #nav-home');
+    if (!link) return;
+    e.preventDefault();
+    const target = link.dataset.target || 'home';
+    const blogVisible = blogSection && blogSection.style.display === 'block';
+    const socialVisible = socialSection && socialSection.style.display === 'block';
 
-        // Special handling for Contact while blog or social is visible
-        if (target === 'contact' && (blogVisible || socialVisible)) {
-            const contactEl = document.getElementById('contact-section');
-            if (contactEl) contactEl.scrollIntoView({ behavior: 'smooth' });
-            return;
-        }
+    // Special handling for Contact while blog or social is visible
+    if (target === 'contact' && (blogVisible || socialVisible)) {
+        const contactEl = document.getElementById('contact-section');
+        if (contactEl) contactEl.scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
 
-        showSection(target);
+    showSection(target);
 
-        if (target === 'home') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (target !== 'blog' && target !== 'social') {
-            const section = document.getElementById(`${target}-section`);
-            if (section) section.scrollIntoView({ behavior: 'smooth' });
-        } else {
-            // Scroll to blog or social section
-            const section = document.getElementById(`${target}-section`);
-            if (section) section.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
+    if (target === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (target !== 'blog' && target !== 'social') {
+        const section = document.getElementById(`${target}-section`);
+        if (section) section.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        const section = document.getElementById(`${target}-section`);
+        if (section) section.scrollIntoView({ behavior: 'smooth' });
+    }
 });
 
 // ─── Load More Buttons ───
 blogLoadMoreBtn?.addEventListener('click', renderBlogNextPosts);
 socialLoadMoreBtn?.addEventListener('click', renderSocialNextPosts);
-
-// ─── Language toggle ───
-langToggle?.addEventListener('click', () => {
-    currentLang = currentLang === 'en' ? 'fa' : 'en';
-    applyLanguage();
-    renderMainPage();
-    if (blogSection?.style.display === 'block') resetBlogPosts();
-    if (socialSection?.style.display === 'block') resetSocialPosts();
-});
 
 // ─── Modal close ───
 modalClose?.addEventListener('click', closeModal);
