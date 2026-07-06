@@ -21,11 +21,8 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding: 20px;
-            min-height:100vh;
+            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+            padding: 20px; min-height: 100vh;
         }
         .container { max-width:1000px; margin:0 auto; }
         h1 { font-size:2rem; font-weight:800; letter-spacing:-1px; margin-bottom:8px; }
@@ -52,7 +49,6 @@
         .post-header .actions { display:flex; gap:6px; align-items:center; }
         .post-header .actions button { padding:6px 10px; font-size:0.75rem; }
         .post-header .move-group input { width:50px; padding:6px; border-radius:6px; border:1px solid var(--border); background:var(--surface-3); color:var(--text); font-size:0.8rem; text-align:center; margin:0; }
-
         .post-details { display:none; margin-top:12px; border-top:1px solid var(--border); padding-top:12px; }
         .post-details.open { display:block; }
         label { font-size:0.8rem; color:var(--text-secondary); display:block; margin-bottom:4px; }
@@ -61,7 +57,6 @@
             padding:8px 12px; border-radius:6px; font-family:'JetBrains Mono', monospace; font-size:0.85rem; margin-bottom:10px;
         }
         textarea { resize:vertical; min-height:60px; }
-
         /* Rich editor */
         .editor-toolbar {
             display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px; background:var(--surface-2); padding:6px; border-radius:6px;
@@ -77,9 +72,7 @@
             color:var(--text); outline:none; margin-bottom:10px;
         }
         .rich-editor:focus { border-color:var(--accent); }
-
         .details-save-btn { text-align:right; margin-top:12px; }
-
         /* Toast */
         #toast-container {
             position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
@@ -96,18 +89,19 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>📝 Blog Manager</h1>
-    <p class="subtitle">Open your <code>blog/</code> folder to edit posts offline</p>
-    <div class="toolbar">
-        <button id="openFolderBtn">📂 Open Blog Folder</button>
-        <button id="addPostBtn" disabled>➕ New Post</button>
+    <div class="container">
+        <h1>📝 Blog Manager</h1>
+        <p class="subtitle">Open your <code>blog/</code> folder to edit posts offline</p>
+        <div class="toolbar">
+            <button id="openFolderBtn">📂 Open Blog Folder</button>
+            <button id="addPostBtn" disabled>➕ New Post</button>
+            <button id="generateBtn" disabled>📄 Generate Static Posts</button>
+        </div>
+        <div class="post-list" id="postList"></div>
     </div>
-    <div class="post-list" id="postList"></div>
-</div>
-<div id="toast-container"></div>
+    <div id="toast-container"></div>
 
-<script>
+    <script>
     let blogDirHandle = null;
     let postsIndex = [];               // from index.json
     let currentPostCache = {};        // stores fetched post content by id
@@ -119,7 +113,7 @@
     // ─── Toast ───
     function toast(msg) {
         const container = document.getElementById('toast-container');
-        const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+        const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
         container.appendChild(t);
         setTimeout(() => t.remove(), 3000);
     }
@@ -168,6 +162,7 @@
             catch { throw new Error('index.json not found in folder.'); }
             postsIndex = await readJSON(indexHandle);
             addPostBtn.disabled = false;
+            generateBtn.disabled = false;
             toast(`Loaded ${postsIndex.length} posts.`);
             renderPostList();
         } catch (err) {
@@ -178,7 +173,7 @@
     // ─── Render post list ───
     function renderPostList() {
         postListEl.innerHTML = postsIndex.map((post, idx) => {
-            const rowNum = idx+1;
+            const rowNum = idx + 1;
             const titleEn = post.title?.en || post.title?.fa || 'Untitled';
             const date = post.date || '';
             return `
@@ -350,10 +345,10 @@
 
     // ─── Move / Delete / Add ───
     async function movePost(idx, targetRow) {
-        const newIdx = parseInt(targetRow)-1;
-        if (isNaN(newIdx) || newIdx<0 || newIdx>=postsIndex.length || newIdx===idx) return;
-        const post = postsIndex.splice(idx,1)[0];
-        postsIndex.splice(newIdx,0,post);
+        const newIdx = parseInt(targetRow) - 1;
+        if (isNaN(newIdx) || newIdx < 0 || newIdx >= postsIndex.length || newIdx === idx) return;
+        const post = postsIndex.splice(idx, 1)[0];
+        postsIndex.splice(newIdx, 0, post);
         renderPostList();
         // Save index
         if (blogDirHandle) {
@@ -367,10 +362,10 @@
         if (!confirm('Delete this post?')) return;
         const post = postsIndex[idx];
         // Remove from index
-        postsIndex.splice(idx,1);
+        postsIndex.splice(idx, 1);
         // Delete file
         if (blogDirHandle) {
-            try { await blogDirHandle.removeEntry(`post-${post.id}.json`); } catch(e){}
+            try { await blogDirHandle.removeEntry(`post-${post.id}.json`); } catch (e) { }
             const indexHandle = await blogDirHandle.getFileHandle('index.json');
             await writeJSON(indexHandle, postsIndex);
         }
@@ -407,9 +402,166 @@
         toast('New post created.');
     }
 
+    // ─── Static post template ───
+    function buildStaticPostHTML(postMeta, postData) {
+        const titleEn = postMeta.title?.en || '';
+        const titleFa = postMeta.title?.fa || titleEn;
+        const descEn = postMeta.summary?.en || '';
+        const descFa = postMeta.summary?.fa || '';
+        const date = postMeta.date;
+        const contentEn = postData.content?.en || '';
+        const contentFa = postData.content?.fa || '';
+        const tags = (postMeta.tags || []).map(tag => `<span>${tag}</span>`).join('');
+        const tagsText = (postMeta.tags || []).join(', ');
+        const tagsArray = JSON.stringify(postMeta.tags || []); 
+        const canonical = `blog/post-${postMeta.id}.html`;
+        const readTimeEn = postMeta.readTime?.en || '';
+        const readTimeFa = postMeta.readTime?.fa || '';
+
+        return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${titleEn} — Telecom & AI Engineer</title>
+    <meta name="description" content="${descEn}">
+    <meta name="description" lang="fa" content="${descFa}">
+    <meta name="keywords" content="${tagsText}">
+    <meta property="og:title" content="${titleEn}">
+    <meta property="og:description" content="${descEn}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="${canonical}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="${titleEn}">
+    <meta name="twitter:description" content="${descEn}">
+    <link rel="alternate" hreflang="en" href="/${canonical}">
+    <link rel="alternate" hreflang="fa" href="/${canonical}">
+    <link rel="canonical" href="/${canonical}">
+    <link rel="stylesheet" href="/styles.css">
+    <script type="application/ld+json">
+        [
+          {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "@id": "/${canonical}",
+            "inLanguage": "en",
+            "headline": "${titleEn}",
+            "datePublished": "${date}",
+            "author": { "@type": "Person", "name": "Abbas Hatami Khoshmardan" },
+            "description": "${descEn}",
+            "keywords": ${tagsArray}
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "@id": "/${canonical}#fa",
+            "inLanguage": "fa",
+            "headline": "${titleFa}",
+            "datePublished": "${date}",
+            "author": { "@type": "Person", "name": "عباس حاتمی خوشمردان" },
+            "description": "${descFa}",
+            "keywords": ${tagsArray},
+            "translationOfWork": { "@id": "${canonical}" }
+          }
+        ]
+    <\/script>
+    <style>
+        .static-post { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .static-post h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+        .static-post .meta { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-bottom: 24px; }
+        .static-post .content { line-height: 1.8; font-size: 1.05rem; }
+        .static-post .content img, .static-post .content video { max-width: 100%; border-radius: 8px; margin: 12px 0; }
+        .back-link { display: inline-block; margin-top: 40px; color: var(--accent-2); text-decoration: none; font-weight: 600; }
+        .back-link:hover { color: #fff; }
+        .lang-switch { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border: 1px solid var(--border); padding: 8px 14px; border-radius: 50px; color: var(--text); cursor: pointer; font-size: 0.8rem; font-weight: 600; margin-bottom: 24px; }
+        div[lang] { display: none; }
+        div[lang].active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+
+    <nav class="navbar" id="main-navbar"></nav>
+
+    <main class="static-post">
+        <div lang="en" id="content-en" class="active">
+            <h1>${titleEn}</h1>
+            <div class="meta blog-meta">
+                <span class="static-date" data-date="${date}">${date}</span>
+                <span>·</span>
+                <span>${readTimeEn}</span>   
+                <div class="project-tech">${tags}</div>
+            </div>
+            <div class="content">${contentEn}</div>
+            <a href="/index.html#blog" class="back-link">← Back to blog</a>
+        </div>
+        <div lang="fa" id="content-fa" dir="rtl" style="text-align:right;">
+            <h1>${titleFa}</h1>
+            <div class="meta blog-meta">
+                <span class="static-date" data-date="${date}">${date}</span>
+                <span>·</span>
+                <span>${readTimeFa}</span>
+                <div class="project-tech">${tags}</div>
+            </div>
+            <div class="content">${contentFa}</div>
+            <a href="/index.html#blog" class="back-link">→ بازگشت به نوشته‌ها</a>
+        </div>
+    </main>
+
+    <footer class="footer" id="main-footer"></footer>
+
+    <script src="/translations.js"><\/script>
+    <script src="/components.js"><\/script>
+</body>
+</html>
+        `;
+    }
+
+    // ─── Generate static files ───
+    async function generateStaticPosts() {
+        if (!blogDirHandle) {
+            toast('Please open the blog folder first.');
+            return;
+        }
+        // Ensure all posts are loaded
+        for (const postMeta of postsIndex) {
+            if (!currentPostCache[postMeta.id]) {
+                try {
+                    const fileHandle = await blogDirHandle.getFileHandle(`post-${postMeta.id}.json`);
+                    currentPostCache[postMeta.id] = await readJSON(fileHandle);
+                } catch (e) {
+                    toast(`Missing post file for ${postMeta.id}, skipping.`);
+                    continue;
+                }
+            }
+        }
+
+        let count = 0;
+        for (const postMeta of postsIndex) {
+            const postData = currentPostCache[postMeta.id];
+            if (!postData) continue;
+            const htmlContent = buildStaticPostHTML(postMeta, postData);
+            try {
+                const fileHandle = await blogDirHandle.getFileHandle(`post-${postMeta.id}.html`, { create: true });
+                const writable = await fileHandle.createWritable();
+                await writable.write(htmlContent);
+                await writable.close();
+                count++;
+            } catch (e) {
+                toast(`Error writing ${postMeta.id}.html: ${e.message}`);
+            }
+        }
+        toast(`Generated ${count} static HTML files.`);
+    }
+
     // ─── Init ───
     openFolderBtn.addEventListener('click', openFolder);
     addPostBtn.addEventListener('click', addNewPost);
+    generateBtn.addEventListener('click', generateStaticPosts);
 </script>
 </body>
 </html>
