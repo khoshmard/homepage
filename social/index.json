@@ -1,5 +1,105 @@
 [
   {
+    "id": "206",
+    "platform": "virasty",
+    "date": "2026-07-08",
+    "url": "https://virasty.com/khoshmard/1783459669946308724",
+    "content": {
+      "fa": [
+        "یکم واقع‌بین باشید:",
+        "تو مملکتی که نفر اول اون نمی‌تونه در انظار عمومی حاضر بشه و هر لحظه احتمال ترورش وجود داره؛",
+        "فحش و بطری آب خوردن هیچ‌کاره مملکت که ارزش خبری نداره!",
+        "#انتقام",
+        "#مرگ_بر_آمریکا"
+      ]
+    }
+  },
+  {
+    "id": "205",
+    "platform": "virasty",
+    "date": "2026-07-06",
+    "url": "https://virasty.com/khoshmard/1783322519601698627",
+    "content": {
+      "fa": [
+        "#توافق نمی‌خوایم/ سر #ترامپ رو می‌خوایم",
+        "",
+        "#انتقام",
+        "#مذاکره"
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/5952f28103274f5a85776e599f5640d5",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/4a2b150e144e419f96d0f783a6917e83",
+        "caption": {
+          "fa": "شعار مردم در مراسم تشییع امام"
+        }
+      }
+    ]
+  },
+  {
+    "id": "204",
+    "platform": "virasty",
+    "date": "2026-07-05",
+    "url": "https://virasty.com/khoshmard/1783223748570570960",
+    "content": {
+      "fa": [
+        "کسی که کشت #امام مرا، چرا نکشیم؟ / که ننگ ماست اگر قاتل تو را نکشیم.",
+        "از این به بعد، کفن جای جامه بر تن ماست / قسم به خون تو، قتل #ترامپ گردن ماست.",
+        "",
+        "#انتقام"
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/b47536636e9a4ef7bca6242281001518",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/ad8672ba7ceb4b8191784b2d8371bc78",
+        "caption": {
+          "fa": "شعرخوانی محمد رسولی"
+        }
+      }
+    ]
+  },
+  {
+    "id": "203",
+    "platform": "virasty",
+    "date": "2026-07-04",
+    "url": "https://virasty.com/khoshmard/1783185685986824985",
+    "content": {
+      "fa": [
+        "#مرثیه خوانی شنیدنی تمیم البرغوثی‌، شاعر و روشنفکر #فلسطین‍ی بر #وداع با #امام_شهید"
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/9e1b31ee9a9a4d8fb3e430af63544977",
+        "thumbnail": "https://cdn.virasty.com/c2cd53d9c42d070de799244b5978ccc0/97ad5a6feeb8448a8165fc1f23157f01",
+        "caption": {
+          "fa": "شعر تمیم البرغوثی"
+        }
+      }
+    ]
+  },
+  {
+    "id": "202",
+    "platform": "virasty",
+    "date": "2026-07-04",
+    "url": "https://virasty.com/khoshmard/1783167397229189304",
+    "content": {
+      "fa": [
+        "بگذار تا بگرییم چون ابر در بهاران",
+        "کز سنگ گریه خیزد روز #وداع یاران",
+        "",
+        "#باید_برخاست",
+        "#انتقام",
+        "#مرگ_بر_آمریکا"
+      ]
+    }
+  },
+  {
     "id": 201,
     "platform": "virasty",
     "date": "2026-07-03",
