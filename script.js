@@ -257,6 +257,8 @@ function renderBlogNextPosts() {
     slice.forEach(post => {
         const card = document.createElement('a');
         const postUrl = `/blog/post-${post.id}.html`;   // static file URL
+        const readTime = post.readTimeMin || 0;
+        const readTimeText = lang === 'en' ? `${readTime} min read` : `${toPersianDigits(readTime)} دقیقه مطالعه`;
         card.href = postUrl;
         card.className = 'project-card blog-card';
         card.dataset.id = post.id;
@@ -266,7 +268,7 @@ function renderBlogNextPosts() {
             <div class="blog-meta">
                 <span>${lang === 'fa' ? toJalali(post.date) : post.date}</span>
                 <span>·</span>
-                <span>${(post.readTime?.[lang]) || (post.readTime?.en) || ''}</span>
+                <span>${readTimeText}</span>
             </div>
             <h3>${(post.title?.[lang]) || (post.title?.en) || ''}</h3>
             <div class="blog-summary">${(post.summary?.[lang]) || (post.summary?.en) || ''}</div>
@@ -572,6 +574,25 @@ function openProjectModal(projectId) {
 }
 
 // ─── Modal: blog ───
+function renderBlocksToHTML(blocks) {
+    if (!Array.isArray(blocks)) return '';
+    return blocks.map(block => {
+        switch (block.type) {
+            case 'paragraph': return `<p>${block.text}</p>`;
+            case 'heading': return `<h2>${block.text}</h2>`;
+            case 'image':
+                return `<figure><img src="${block.src}" alt="${block.alt || ''}" loading="lazy"><figcaption>${block.alt || ''}</figcaption></figure>`;
+            case 'video':
+                if (block.src.includes('youtube.com/embed') || block.src.includes('vimeo.com/video')) {
+                    return `<div class="video-wrapper"><iframe src="${block.src}" allowfullscreen></iframe></div>`;
+                }
+                return `<video controls src="${block.src}"></video>`;
+            case 'code':
+                return `<pre><code class="language-${block.language || 'plaintext'}">${block.code}</code></pre>`;
+            default: return '';
+        }
+    }).join('');
+}
 async function openBlogModal(postMeta) {
     const postId = postMeta.id;
     if (!postsCache[postId]) {
@@ -584,11 +605,23 @@ async function openBlogModal(postMeta) {
         }
     }
     const postData = postsCache[postId];
+    const lang = window.appLang || 'en';
+
+    // Render blocks to HTML
+    const blocks = postData.content?.[lang] || postData.content?.en || [];
+    const contentHTML = renderBlocksToHTML(blocks);
+
+    // Reading time
+    const readTimeMin = postMeta.readTimeMin || postData.readTimeMin || 0;
+    const readTimeText = lang === 'en'
+        ? `${readTimeMin} min read`
+        : `${toPersianDigits(readTimeMin)} دقیقه مطالعه`;
+
     if (modalIcon) modalIcon.textContent = postMeta.icon || '📝';
-    if (modalMeta) modalMeta.textContent = `${window.appLang === 'fa' ? toJalali(postMeta.date) : postMeta.date}  ·  ${(postData.readTime?.[window.appLang]) || (postData.readTime?.en) || ''}`;
-    if (modalTitle) modalTitle.textContent = (postData.title?.[window.appLang]) || (postData.title?.en) || '';
-    if (modalBody) modalBody.innerHTML = (postData.content?.[window.appLang]) || (postData.content?.en) || '';
-    if (modalTech) modalTech.innerHTML = '';
+    if (modalMeta) modalMeta.textContent = `${lang === 'fa' ? toJalali(postMeta.date) : postMeta.date}  ·  ${readTimeText}`;
+    if (modalTitle) modalTitle.textContent = (postMeta.title?.[lang]) || (postMeta.title?.en) || '';
+    if (modalBody) modalBody.innerHTML = contentHTML;
+    if (modalTech) modalTech.innerHTML = (postMeta.tags || []).map(tag => `<span>${tag}</span>`).join('');
     if (modalLink) modalLink.style.display = 'none';
     modalOverlay?.classList.add('active');
 }

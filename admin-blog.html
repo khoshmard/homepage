@@ -245,6 +245,26 @@
         div.innerHTML = html;
         return div.textContent || div.innerText || '';
     }
+    function calculateReadingTime(contentBlocks) {
+        if (!Array.isArray(contentBlocks)) return 0;
+        let totalWords = 0;
+        for (const block of contentBlocks) {
+            if (block.type === 'paragraph' || block.type === 'heading') {
+                const text = block.text || '';
+                // Strip HTML tags to count only visible words
+                const plainText = text.replace(/<[^>]*>/g, '');
+                const words = plainText.split(/\s+/).filter(w => w.length > 0);
+                totalWords += words.length;
+            }
+            // Code blocks also count (roughly)
+            if (block.type === 'code' && block.code) {
+                const codeWords = block.code.split(/\s+/).filter(w => w.length > 0);
+                totalWords += codeWords;
+            }
+        }
+        const wordsPerMinute = 200;   // average reading speed
+        return Math.ceil(totalWords / wordsPerMinute);
+    }
 
     // ─── Open blog folder ───
     async function openFolder() {
@@ -344,6 +364,8 @@
         <div class="rich-editor" id="summary-fa-${idx}" contenteditable="true" style="direction:rtl; text-align:right;">${postMeta.summary?.fa || ''}</div>
         <label>Tags (comma separated)</label>
         <input type="text" value="${(postMeta.tags || []).join(',')}" onchange="updateMeta(${idx}, 'tags', this.value.split(',').map(s=>s.trim()))">
+        <label>Reading time (minutes)</label>
+        <input type="number" value="${postMeta.readTimeMin || 0}" readonly>
         <label>Content Blocks (English)</label>
         <div class="blocks-editor" id="blocks-en-${idx}">
             ${blocksEn.map((b, bi) => renderBlockEditor(JSON.stringify(b), bi, 'en', idx)).join('')}
@@ -354,7 +376,6 @@
             ${blocksFa.map((b, bi) => renderBlockEditor(JSON.stringify(b), bi, 'fa', idx)).join('')}
             <button onclick="addBlock(${idx}, 'fa')">+ Add Block</button>
         </div>
-        <div class="rich-editor" id="editor-fa-${idx}" contenteditable="true" style="direction:rtl; text-align:right;"></div>
         <div class="details-save-btn">
             <button class="accent" onclick="savePost(${idx})">💾 Save Post</button>
         </div>`;
@@ -645,6 +666,9 @@
     async function savePost(idx) {
         if (!blogDirHandle) return;
         const postMeta = postsIndex[idx];
+        const postData = currentPostCache[postMeta.id];
+        const textBlocks = postData.content?.fa || postData.content?.en;
+        postMeta.readTimeMin = calculateReadingTime(textBlocks);
         try {
             const fileHandle = await blogDirHandle.getFileHandle(`post-${postMeta.id}.json`);
             await writeJSON(fileHandle, currentPostCache[postMeta.id]);
@@ -697,7 +721,7 @@
             title: { en: 'New Post', fa: 'پست جدید' },
             summary: { en: '', fa: '' },
             tags: [],
-            readTime: { en: '5 min read', fa: '۵ دقیقه' }
+            readTimeMin: 1
         };
         postsIndex.unshift(newPost);
         // Create post file
@@ -729,8 +753,9 @@
         const tagsText = (postMeta.tags || []).join(', ');
         const tagsArray = JSON.stringify(postMeta.tags || []);
         const canonical = `blog/post-${postMeta.id}.html`;
-        const readTimeEn = postMeta.readTime?.en || '';
-        const readTimeFa = postMeta.readTime?.fa || '';
+        const readTimeMin = postMeta.readTimeMin || 0;
+        const readTimeEn = `${readTimeMin} min read`;
+        const readTimeFa = `${toPersianDigits(readTimeMin)} دقیقه مطالعه`;
 
         return `
 <!DOCTYPE html>
