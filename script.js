@@ -574,25 +574,6 @@ function openProjectModal(projectId) {
 }
 
 // ─── Modal: blog ───
-function renderBlocksToHTML(blocks) {
-    if (!Array.isArray(blocks)) return '';
-    return blocks.map(block => {
-        switch (block.type) {
-            case 'paragraph': return `<p>${block.text}</p>`;
-            case 'heading': return `<h2>${block.text}</h2>`;
-            case 'image':
-                return `<figure><img src="${block.src}" alt="${block.alt || ''}" loading="lazy"><figcaption>${block.alt || ''}</figcaption></figure>`;
-            case 'video':
-                if (block.src.includes('youtube.com/embed') || block.src.includes('vimeo.com/video')) {
-                    return `<div class="video-wrapper"><iframe src="${block.src}" allowfullscreen></iframe></div>`;
-                }
-                return `<video controls src="${block.src}"></video>`;
-            case 'code':
-                return `<pre><code class="language-${block.language || 'plaintext'}">${block.code}</code></pre>`;
-            default: return '';
-        }
-    }).join('');
-}
 async function openBlogModal(postMeta) {
     const postId = postMeta.id;
     if (!postsCache[postId]) {

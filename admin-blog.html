@@ -187,6 +187,8 @@
         <button data-command="removeFormat">🧹</button>
     </div>
 
+    <script src="translations.js"></script>
+    <script src="blog-utils.js"></script>
     <script>
     let blogDirHandle = null;
     let postsIndex = [];               // from index.json
@@ -239,31 +241,6 @@
             return Object.keys(cleaned).length ? cleaned : undefined;
         }
         return obj;
-    }
-    function stripHTML(html) {
-        const div = document.createElement('div');
-        div.innerHTML = html;
-        return div.textContent || div.innerText || '';
-    }
-    function calculateReadingTime(contentBlocks) {
-        if (!Array.isArray(contentBlocks)) return 0;
-        let totalWords = 0;
-        for (const block of contentBlocks) {
-            if (block.type === 'paragraph' || block.type === 'heading') {
-                const text = block.text || '';
-                // Strip HTML tags to count only visible words
-                const plainText = text.replace(/<[^>]*>/g, '');
-                const words = plainText.split(/\s+/).filter(w => w.length > 0);
-                totalWords += words.length;
-            }
-            // Code blocks also count (roughly)
-            if (block.type === 'code' && block.code) {
-                const codeWords = block.code.split(/\s+/).filter(w => w.length > 0);
-                totalWords += codeWords;
-            }
-        }
-        const wordsPerMinute = 200;   // average reading speed
-        return Math.ceil(totalWords / wordsPerMinute);
     }
 
     // ─── Open blog folder ───
@@ -623,34 +600,15 @@
         }
     }
 
-        function updateBlockText(postIdx, lang, blockIdx, text) {
-            const post = currentPostCache[postsIndex[postIdx].id];
-            post.content[lang][blockIdx].text = text;
-        }
-        function updateBlockField(postIdx, lang, blockIdx, field, value) {
-            const post = currentPostCache[postsIndex[postIdx].id];
-            post.content[lang][blockIdx][field] = value;
-        }
-
-    function renderBlocksToHTML(blocks, lang) {
-        if (!Array.isArray(blocks)) return '';
-        return blocks.map(block => {
-            switch (block.type) {
-                case 'paragraph': return `<p>${block.text}</p>`;
-                case 'heading': return `<h2>${block.text}</h2>`;
-                case 'image':
-                    return `<figure><img src="${block.src}" alt="${block.alt || ''}" loading="lazy"><figcaption>${block.alt || ''}</figcaption></figure>`;
-                case 'video':
-                    if (block.src.includes('youtube.com/embed') || block.src.includes('vimeo.com/video')) {
-                        return `<div class="video-wrapper"><iframe src="${block.src}" allowfullscreen></iframe></div>`;
-                    }
-                    return `<video controls src="${block.src}"></video>`;
-                case 'code':
-                    return `<pre><code class="language-${block.language || 'plaintext'}">${block.code}</code></pre>`;
-                default: return '';
-            }
-        }).join('');
+    function updateBlockText(postIdx, lang, blockIdx, text) {
+        const post = currentPostCache[postsIndex[postIdx].id];
+        post.content[lang][blockIdx].text = text;
     }
+    function updateBlockField(postIdx, lang, blockIdx, field, value) {
+        const post = currentPostCache[postsIndex[postIdx].id];
+        post.content[lang][blockIdx][field] = value;
+    }
+
     // ─── Update metadata functions ───
     function updateMeta(idx, field, value) { postsIndex[idx][field] = value; }
     function updateMetaTitle(idx, lang, value) {
