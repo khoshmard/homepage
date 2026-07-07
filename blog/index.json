@@ -1,38 +1,17 @@
 [
   {
-    "id": 101,
-    "icon": "📶",
-    "date": "2025-03-12",
-    "readTime": { "en": "7 min read", "fa": "۷ دقیقه مطالعه" },
-    "title": { "en": "How 5G O-RAN is Changing Telecom Hardware", "fa": "چگونه 5G O-RAN سخت‌افزار مخابرات را متحول می‌کند" },
-    "summary": {
-      "en": "Open RAN architectures are disaggregating traditional base stations. Here's what it means for hardware engineers.",
-      "fa": "معماری‌های Open RAN ایستگاه‌های پایه سنتی را تفکیک می‌کنند. ببینید این برای مهندسان سخت‌افزار چه معنایی دارد."
+    "id": "101",
+    "icon": "📡",
+    "date": "2026-07-07",
+    "title": {
+      "en": "Introduction to Integrated Sensing and Communication (ISAC)",
+      "fa": "مقدمه‌ای بر ارتباطات و سنجش یکپارچه (ISAC)"
     },
-    "tags": ["5G", "O-RAN", "Telecom", "Hardware"]
-  },
-  {
-    "id": 102,
-    "icon": "🧠",
-    "date": "2025-02-28",
-    "readTime": { "en": "5 min read", "fa": "۵ دقیقه مطالعه" },
-    "title": { "en": "Running Edge AI on Microcontrollers", "fa": "اجرای هوش مصنوعی لب‌ه روی میکروکنترلرها" },
     "summary": {
-      "en": "From TensorFlow Lite Micro to energy‑efficient inference on an ESP32 – lessons learned.",
-      "fa": "از TensorFlow Lite Micro تا استنتاج کم‌مصرف روی ESP32 – درس‌هایی از پروژه‌های واقعی."
+      "en": "<p>ISAC unifies radar sensing and wireless communication in a single system. This article explains the core idea, key applications in 6G, technical foundations, challenges, and the road ahead.</p>",
+      "fa": "<p>ISAC سنجش راداری و ارتباطات بی‌سیم را در یک سیستم واحد ادغام می‌کند. این مقاله ایده اصلی، کاربردهای کلیدی در 6G، مبانی فنی، چالش‌ها و مسیر آینده را توضیح می‌دهد.</p>"
     },
-    "tags": ["Edge AI", "ESP32", "TensorFlow Lite", "IoT"]
-  },
-  {
-    "id": 103,
-    "icon": "🔧",
-    "date": "2025-01-15",
-    "readTime": { "en": "6 min read", "fa": "۶ دقیقه مطالعه" },
-    "title": { "en": "KiCad Tips for RF PCB Design", "fa": "نکات KiCad برای طراحی PCB فرکانس بالا" },
-    "summary": {
-      "en": "Avoid common pitfalls when designing RF boards in KiCad: impedance matching, grounding, and stack‑up tricks.",
-      "fa": "از اشتباهات رایج در طراحی بردهای RF با KiCad جلوگیری کنید: تطبیق امپدانس، زمین‌بندی و ترفندهای لایه‌چینی."
-    },
-    "tags": ["KiCad", "RF Design", "PCB", "Engineering"]
+    "tags": [ "ISAC", "6G", "Sensing", "Communication", "Radar", "OFDM", "MIMO" ],
+    "readTimeMin": 8
   }
 ]

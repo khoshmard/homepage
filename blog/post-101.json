@@ -1,14 +1,136 @@
 {
-  "title": {
-    "en": "How 5G O-RAN is Changing Telecom Hardware",
-    "fa": "چگونه 5G O-RAN سخت‌افزار مخابرات را متحول می‌کند"
-  },
-  "readTime": {
-    "en": "7 min read",
-    "fa": "۷ دقیقه مطالعه"
-  },
   "content": {
-    "en": "<p>Open RAN (O-RAN) is transforming the telecom landscape by decoupling hardware and software components. In traditional RAN, baseband units (BBUs) and remote radio heads (RRHs) were tightly integrated with proprietary interfaces. With O-RAN, we now have open, interoperable interfaces that allow mixing hardware from different vendors.</p><p>This shift has major implications for hardware engineers: we can now design generic compute platforms (x86, ARM, FPGA) that run virtualized baseband software. This article dives into the architecture, the hardware challenges (especially around latency and timing), and how you can prototype your own O-RAN compliant radio unit using off‑the‑shelf SDRs.</p>",
-    "fa": "<p>Open RAN (O-RAN) با جدا کردن اجزای سخت‌افزاری و نرم‌افزاری چشم‌انداز مخابرات را تغییر می‌دهد. در RAN سنتی، واحدهای باند پایه (BBU) و سرهای رادیویی راه دور (RRH) با رابط‌های اختصاصی یکپارچه بودند. با O-RAN، اکنون رابط‌های باز و قابل همکاری داریم که امکان ترکیب سخت‌افزار از فروشندگان مختلف را فراهم می‌کند.</p><p>این تغییر پیامدهای بزرگی برای مهندسان سخت‌افزار دارد: اکنون می‌توانیم پلتفرم‌های محاسباتی عمومی (x86، ARM، FPGA) طراحی کنیم که نرم‌افزار باند پایه مجازی را اجرا می‌کنند. این مقاله به بررسی معماری، چالش‌های سخت‌افزاری (به‌ویژه تأخیر و زمان‌بندی) و نحوه نمونه‌سازی واحد رادیویی سازگار با O-RAN با استفاده از SDRهای آماده می‌پردازد.</p>"
+    "en": [
+      {
+        "type": "heading",
+        "text": "What is Integrated Sensing and Communication (ISAC)?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Integrated Sensing and Communication (ISAC) is a paradigm shift in wireless system design. Instead of treating radar sensing and data communication as separate functions – often competing for spectrum and hardware – ISAC unifies them into a single platform. By sharing the same waveform, antenna array, and processing chain, an ISAC system can simultaneously detect objects, estimate their parameters (range, velocity, angle), and exchange information with other devices."
+      },
+      {
+        "type": "paragraph",
+        "text": "The core idea emerged from the observation that both sensing and communication rely on electromagnetic waves. In a communication link, the receiver extracts the transmitted message; in radar, the echo reveals information about the environment. ISAC cleverly exploits this duality. A single transmission can serve both purposes: the direct path carries data, while the reflected paths allow the transmitter (or a co‑located receiver) to sense the surroundings."
+      },
+      {
+        "type": "heading",
+        "text": "Why ISAC Matters for 6G and Beyond"
+      },
+      {
+        "type": "paragraph",
+        "text": "Sixth‑generation (6G) networks aim to deliver immersive experiences, autonomous systems, and ubiquitous intelligence. These ambitions demand more than just high data rates – they require <strong>environmental awareness</strong>. ISAC is considered a key enabler for many 6G use cases:"
+      },
+      {
+        "type": "paragraph",
+        "text": "<strong>1. Autonomous Vehicles:</strong> A roadside base station can simultaneously communicate with a car and sense its position, speed, and surrounding obstacles, reducing the need for dedicated automotive radar.<br><strong>2. Industry 4.0:</strong> In smart factories, ISAC enables wireless control of robots while monitoring the workspace for safety.<br><strong>3. Smart Homes & Healthcare:</strong> A Wi‑Fi access point could detect falls, monitor breathing, or track occupancy – all while streaming video.<br><strong>4. Environmental Monitoring:</strong> Drones equipped with ISAC can map terrain and relay high‑definition video in real time."
+      },
+      {
+        "type": "heading",
+        "text": "Technical Foundations"
+      },
+      {
+        "type": "paragraph",
+        "text": "ISAC systems can be designed in two main categories:"
+      },
+      {
+        "type": "paragraph",
+        "text": "<strong>Waveform‑Sharing ISAC:</strong> A single waveform is designed to fulfill both sensing and communication requirements. For example, an OFDM signal (the backbone of 4G/5G) is well suited because it inherently provides good Doppler tolerance and can be modulated for communication. The sensing receiver processes the echo using matched filtering or compressed sensing.<br><strong>Resource‑Sharing ISAC:</strong> The system uses separate waveforms for each function but dynamically allocates resources (time slots, frequency sub‑bands, spatial beams) between them. This offers more flexibility but less integration gain."
+      },
+      {
+        "type": "paragraph",
+        "text": "Advanced techniques like <strong>MIMO (Multiple‑Input Multiple‑Output)</strong> and <strong>beamforming</strong> are crucial. With a large antenna array, one beam can be steered toward a communication user while another scans the environment. The spatial diversity also improves target detection and angular resolution."
+      },
+      {
+        "type": "heading",
+        "text": "Key Challenges"
+      },
+      {
+        "type": "paragraph",
+        "text": "Despite its promise, ISAC faces several hurdles:"
+      },
+      {
+        "type": "paragraph",
+        "text": "• <strong>Mutual Interference:</strong> A sensing‑optimized waveform may degrade communication throughput, and vice versa. Finding the right trade‑off is an active research area.<br>• <strong>Hardware Impairments:</strong> Sharing components like power amplifiers and ADCs requires careful calibration to avoid distortion that corrupts both functions.<br>• <strong>Signal Processing Complexity:</strong> Real‑time fusion of sensing data and communication symbols demands efficient algorithms, especially for mobile scenarios.<br>• <strong>Standardization:</strong> ISAC must be integrated into future 3GPP releases. This involves defining new reference signals, measurement procedures, and interference management strategies."
+      },
+      {
+        "type": "heading",
+        "text": "The Road Ahead"
+      },
+      {
+        "type": "paragraph",
+        "text": "Early ISAC prototypes are already demonstrating its potential. For instance, the EU‑funded <em>ARISTIDES</em> project and the <em>6G‑SENSORS</em> initiative show joint communication and radar sensing at mm‑wave frequencies. Researchers are also exploring AI/ML‑based waveform design that adapts on‑the‑fly to changing environments."
+      },
+      {
+        "type": "paragraph",
+        "text": "In the long term, ISAC could blur the line between the digital and physical worlds. Every connected device may also become a sensor node, creating a massively distributed sensing fabric. This convergence promises to make wireless infrastructure more efficient, intelligent, and safer."
+      }
+    ],
+    "fa": [
+      {
+        "type": "heading",
+        "text": "ارتباطات و سنجش یکپارچه (ISAC) چیست؟"
+      },
+      {
+        "type": "paragraph",
+        "text": "ارتباطات و سنجش یکپارچه (ISAC) یک تغییر پارادایم در طراحی سیستم‌های بی‌سیم است. به‌جای آنکه سنجش راداری و ارتباطات داده‌ای به‌عنوان عملکردهای جداگانه – که اغلب برای طیف و سخت‌افزار رقابت می‌کنند – در نظر گرفته شوند، ISAC آن‌ها را در یک پلتفرم واحد ترکیب می‌کند. با به‌اشتراک‌گذاری شکل موج، آرایه آنتن و زنجیره پردازش، یک سیستم ISAC می‌تواند هم‌زمان اشیا را تشخیص دهد، پارامترهای آن‌ها (فاصله، سرعت، زاویه) را تخمین بزند و با دستگاه‌های دیگر تبادل اطلاعات کند."
+      },
+      {
+        "type": "paragraph",
+        "text": "ایده اصلی از این مشاهده نشأت گرفت که هر دو عملکرد سنجش و ارتباطات به امواج الکترومغناطیسی وابسته‌اند. در یک لینک ارتباطی، گیرنده پیام ارسال‌شده را استخراج می‌کند؛ در رادار، پژواک اطلاعاتی درباره محیط آشکار می‌سازد. ISAC هوشمندانه از این دوگانگی بهره می‌برد. یک ارسال منفرد می‌تواند هر دو هدف را تأمین کند: مسیر مستقیم داده‌ها را حمل می‌کند، درحالی‌که مسیرهای بازتابی به فرستنده (یا گیرنده هم‌مکان) امکان سنجش محیط را می‌دهند."
+      },
+      {
+        "type": "heading",
+        "text": "چرا ISAC برای 6G و فراتر از آن مهم است"
+      },
+      {
+        "type": "paragraph",
+        "text": "شبکه‌های نسل ششم (6G) به دنبال ارائه تجربیات فراگیر، سامانه‌های خودمختار و هوش همه‌جا حاضرند. این اهداف بیش از نرخ داده بالا نیاز دارند – آن‌ها به <strong>آگاهی محیطی</strong> نیازمندند. ISAC به‌عنوان یک عامل کلیدی برای بسیاری از موارد استفاده 6G شناخته می‌شود:"
+      },
+      {
+        "type": "paragraph",
+        "text": "<strong>۱. خودروهای خودران:</strong> یک ایستگاه پایه کنار جاده می‌تواند هم‌زمان با خودرو ارتباط برقرار کرده و موقعیت، سرعت و موانع اطراف آن را تشخیص دهد، نیاز به رادار خودروی اختصاصی را کاهش می‌دهد.<br><strong>۲. صنعت ۴.۰:</strong> در کارخانه‌های هوشمند، ISAC کنترل بی‌سیم ربات‌ها را همراه با پایش ایمنی محیط فراهم می‌کند.<br><strong>۳. خانه‌های هوشمند و سلامت:</strong> یک نقطه دسترسی Wi‑Fi می‌تواند افتادن را تشخیص دهد، تنفس را پایش کند یا حضور افراد را ردیابی کند – همگی در حین پخش ویدئو.<br><strong>۴. پایش محیطی:</strong> پهپادهای مجهز به ISAC می‌توانند زمین را نقشه‌برداری کرده و ویدئوی با وضوح بالا را به‌صورت بلادرنگ ارسال کنند."
+      },
+      {
+        "type": "heading",
+        "text": "مبانی فنی"
+      },
+      {
+        "type": "paragraph",
+        "text": "سیستم‌های ISAC را می‌توان در دو دسته اصلی طراحی کرد:"
+      },
+      {
+        "type": "paragraph",
+        "text": "<strong>ISAC با اشتراک شکل‌موج:</strong> یک شکل موج واحد برای تأمین نیازهای سنجش و ارتباطات طراحی می‌شود. برای مثال، سیگنال OFDM (ستون فقرات 4G/5G) مناسب است زیرا به‌طور ذاتی تحمل داپلر خوبی دارد و می‌توان آن را برای ارتباطات مدوله کرد. گیرنده سنجش پژواک را با استفاده از فیلتر تطبیقی یا سنجش فشرده پردازش می‌کند.<br><strong>ISAC با اشتراک منابع:</strong> سیستم از شکل موج‌های جداگانه برای هر عملکرد استفاده می‌کند اما منابع (شکاف‌های زمانی، زیرباندهای فرکانسی، پرتوهای فضایی) را به‌صورت پویا بین آن‌ها تخصیص می‌دهد. این کار انعطاف‌پذیری بیشتر اما بهره یکپارچگی کمتری ارائه می‌دهد."
+      },
+      {
+        "type": "paragraph",
+        "text": "تکنیک‌های پیشرفته‌ای مانند <strong>MIMO (چندورودی‑چندخروجی)</strong> و <strong>شکل‌دهی پرتو</strong> بسیار حیاتی هستند. با یک آرایه آنتن بزرگ، یک پرتو می‌تواند به‌سوی کاربر ارتباطی هدایت شود درحالی‌که پرتوی دیگر محیط را اسکن می‌کند. تنوع فضایی همچنین تشخیص هدف و وضوح زاویه‌ای را بهبود می‌بخشد."
+      },
+      {
+        "type": "heading",
+        "text": "چالش‌های کلیدی"
+      },
+      {
+        "type": "paragraph",
+        "text": "علیرغم وعده‌هایش، ISAC با موانع متعددی روبروست:"
+      },
+      {
+        "type": "paragraph",
+        "text": "• <strong>تداخل متقابل:</strong> یک شکل موج بهینه‌شده برای سنجش ممکن است گذردهی ارتباطی را کاهش دهد و بالعکس. یافتن مصالحه مناسب یک حوزه تحقیقاتی فعال است.<br>• <strong>نقص‌های سخت‌افزاری:</strong> به‌اشتراک‌گذاری قطعاتی مانند تقویت‌کننده‌های قدرت و ADCها نیازمند کالیبراسیون دقیق است تا از اعوجاجی که هر دو عملکرد را خراب می‌کند، جلوگیری شود.<br>• <strong>پیچیدگی پردازش سیگنال:</strong> تلفیق بلادرنگ داده‌های سنجش و نمادهای ارتباطی به الگوریتم‌های کارآمد نیاز دارد، به‌ویژه برای سناریوهای متحرک.<br>• <strong>استانداردسازی:</strong> ISAC باید در نسخه‌های آینده 3GPP ادغام شود. این شامل تعریف سیگنال‌های مرجع جدید، رویه‌های اندازه‌گیری و استراتژی‌های مدیریت تداخل است."
+      },
+      {
+        "type": "heading",
+        "text": "مسیر پیش رو"
+      },
+      {
+        "type": "paragraph",
+        "text": "نمونه‌های اولیه ISAC در حال حاضر پتانسیل آن را نشان می‌دهند. برای مثال، پروژه اروپایی <em>ARISTIDES</em> و ابتکار <em>6G‑SENSORS</em> سنجش راداری و ارتباطات مشترک را در فرکانس‌های موج میلی‌متری به نمایش می‌گذارند. محققان همچنین طراحی شکل موج مبتنی بر هوش مصنوعی/یادگیری ماشین را بررسی می‌کنند که به‌طور لحظه‌ای با محیط در حال تغییر سازگار می‌شود."
+      },
+      {
+        "type": "paragraph",
+        "text": "در بلندمدت، ISAC می‌تواند مرز بین دنیای دیجیتال و فیزیکی را محو کند. هر دستگاه متصل ممکن است به یک گره حسگر تبدیل شود و یک بافت سنجش توزیع‌شده عظیم ایجاد کند. این هم‌گرایی نوید می‌دهد زیرساخت بی‌سیم را کارآمدتر، هوشمندتر و ایمن‌تر سازد."
+      }
+    ]
   }
 }
