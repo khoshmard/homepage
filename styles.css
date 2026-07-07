@@ -352,6 +352,12 @@ html[lang="fa"] .modal-meta {
     font-family: 'JetBrains Mono', monospace;
 }
 
+.blog-summary {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
 /* ── Load more button & no more message ── */
 .load-more-wrap {
     text-align: center;

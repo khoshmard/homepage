@@ -57,21 +57,93 @@
             padding:8px 12px; border-radius:6px; font-family:'JetBrains Mono', monospace; font-size:0.85rem; margin-bottom:10px;
         }
         textarea { resize:vertical; min-height:60px; }
+        /* Block editor */
+        .block-item {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .block-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .block-type-select {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            flex: 1;
+        }
+        .block-delete-btn {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .block-delete-btn:hover {
+            border-color: var(--accent);
+            color: #fff;
+        }
         /* Rich editor */
-        .editor-toolbar {
-            display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px; background:var(--surface-2); padding:6px; border-radius:6px;
-        }
-        .editor-toolbar button {
-            padding:4px 8px; font-size:0.75rem; background:transparent; border:1px solid transparent; color:var(--text-secondary);
-        }
-        .editor-toolbar button:hover { border-color:var(--border); background:var(--surface-3); }
-        .editor-toolbar button.active { color:var(--accent-2); }
         .rich-editor {
-            min-height:150px; max-height:400px; overflow-y:auto; background:var(--surface-3); border:1px solid var(--border);
-            border-radius:6px; padding:12px; font-family:'Inter', sans-serif; font-size:0.9rem; line-height:1.6;
-            color:var(--text); outline:none; margin-bottom:10px;
+            min-height: 80px;
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text);
+            outline: none;
         }
-        .rich-editor:focus { border-color:var(--accent); }
+        .rich-editor:focus {
+            border-color: var(--accent);
+        }
+        /* Floating toolbar */
+        #floating-toolbar {
+            position: fixed;
+            display: none;
+            z-index: 10000;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 6px 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            flex-direction: row;
+            gap: 4px;
+            align-items: center;
+            pointer-events: auto;
+        }
+        #floating-toolbar.visible {
+            display: flex;
+        }
+        #floating-toolbar button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        #floating-toolbar button:hover {
+            background: var(--surface-3);
+            color: #fff;
+        }
+        #floating-toolbar button.active {
+            color: var(--accent-2);
+        }
         .details-save-btn { text-align:right; margin-top:12px; }
         /* Toast */
         #toast-container {
@@ -100,15 +172,32 @@
         <div class="post-list" id="postList"></div>
     </div>
     <div id="toast-container"></div>
+    <input type="color" id="hiddenColorPicker" style="position:fixed;top:-50px;left:-50px;opacity:0;pointer-events:none;">
+    <div id="floating-toolbar">
+        <button data-command="bold"><b>B</b></button>
+        <button data-command="italic"><i>I</i></button>
+        <button data-command="underline"><u>U</u></button>
+        <button data-command="formatBlock" data-value="h2">H2</button>
+        <button data-command="createLink">🔗</button>
+        <button data-command="justifyLeft">⬅️</button>
+        <button data-command="justifyCenter">⬜</button>
+        <button data-command="justifyRight">➡️</button>
+        <button data-command="rtl">↔</button>
+        <button data-command="foreColor">🎨</button>
+        <button data-command="removeFormat">🧹</button>
+    </div>
 
     <script>
     let blogDirHandle = null;
     let postsIndex = [];               // from index.json
     let currentPostCache = {};        // stores fetched post content by id
+    let activeEditor = null;
 
     const postListEl = document.getElementById('postList');
     const openFolderBtn = document.getElementById('openFolderBtn');
     const addPostBtn = document.getElementById('addPostBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const floatingToolbar = document.getElementById('floating-toolbar');
 
     // ─── Toast ───
     function toast(msg) {
@@ -150,6 +239,11 @@
             return Object.keys(cleaned).length ? cleaned : undefined;
         }
         return obj;
+    }
+    function stripHTML(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || '';
     }
 
     // ─── Open blog folder ───
@@ -220,11 +314,19 @@
         detailsDiv.innerHTML = buildDetailsForm(idx, postMeta, postData);
         detailsDiv.classList.add('open');
         // Init rich editors
-        initRichEditor(`editor-en-${idx}`, postData.content?.en || '');
-        initRichEditor(`editor-fa-${idx}`, postData.content?.fa || '');
+        detailsDiv.querySelectorAll('.rich-editor[id^="block-"]').forEach(editor => {
+            initRichEditor(editor.id, editor.innerHTML);
+        });
+        // Initialize summary editors
+        ['en', 'fa'].forEach(lang => {
+            const editor = document.getElementById(`summary-${lang}-${idx}`);
+            if (editor) initSummaryEditor(idx, lang, editor);
+        });
     }
 
     function buildDetailsForm(idx, postMeta, postData) {
+        const blocksEn = postData.content?.en || [];
+        const blocksFa = postData.content?.fa || [];
         return `
         <label>ID</label>
         <input type="text" value="${postMeta.id}" onchange="updateMeta(${idx}, 'id', this.value)">
@@ -237,36 +339,20 @@
         <label>Title (Persian)</label>
         <input type="text" value="${postMeta.title?.fa || ''}" onchange="updateMetaTitle(${idx}, 'fa', this.value)" style="direction:rtl; text-align:right;">
         <label>Summary (English)</label>
-        <textarea onchange="updateMetaSummary(${idx}, 'en', this.value)">${postMeta.summary?.en || ''}</textarea>
+        <div class="rich-editor" id="summary-en-${idx}" contenteditable="true">${postMeta.summary?.en || ''}</div>
         <label>Summary (Persian)</label>
-        <textarea onchange="updateMetaSummary(${idx}, 'fa', this.value)" style="direction:rtl; text-align:right;">${postMeta.summary?.fa || ''}</textarea>
+        <div class="rich-editor" id="summary-fa-${idx}" contenteditable="true" style="direction:rtl; text-align:right;">${postMeta.summary?.fa || ''}</div>
         <label>Tags (comma separated)</label>
         <input type="text" value="${(postMeta.tags || []).join(',')}" onchange="updateMeta(${idx}, 'tags', this.value.split(',').map(s=>s.trim()))">
-        <label>Content (English)</label>
-        <div class="editor-toolbar" data-editor="editor-en-${idx}">
-            <button data-command="bold"><b>B</b></button>
-            <button data-command="italic"><i>I</i></button>
-            <button data-command="underline"><u>U</u></button>
-            <button data-command="formatBlock" data-value="h1">H1</button>
-            <button data-command="formatBlock" data-value="h2">H2</button>
-            <button data-command="insertUnorderedList">• List</button>
-            <button data-command="insertOrderedList">1. List</button>
-            <button data-command="createLink">🔗</button>
-            <button data-command="insertImage">🖼️</button>
+        <label>Content Blocks (English)</label>
+        <div class="blocks-editor" id="blocks-en-${idx}">
+            ${blocksEn.map((b, bi) => renderBlockEditor(JSON.stringify(b), bi, 'en', idx)).join('')}
+            <button onclick="addBlock(${idx}, 'en')">+ Add Block</button>
         </div>
-        <div class="rich-editor" id="editor-en-${idx}" contenteditable="true"></div>
-        <label>Content (Persian)</label>
-        <div class="editor-toolbar" data-editor="editor-fa-${idx}">
-            <!-- same buttons -->
-            <button data-command="bold"><b>B</b></button>
-            <button data-command="italic"><i>I</i></button>
-            <button data-command="underline"><u>U</u></button>
-            <button data-command="formatBlock" data-value="h1">H1</button>
-            <button data-command="formatBlock" data-value="h2">H2</button>
-            <button data-command="insertUnorderedList">• List</button>
-            <button data-command="insertOrderedList">1. List</button>
-            <button data-command="createLink">🔗</button>
-            <button data-command="insertImage">🖼️</button>
+        <label>Content Blocks (Persian)</label>
+        <div class="blocks-editor" id="blocks-fa-${idx}">
+            ${blocksFa.map((b, bi) => renderBlockEditor(JSON.stringify(b), bi, 'fa', idx)).join('')}
+            <button onclick="addBlock(${idx}, 'fa')">+ Add Block</button>
         </div>
         <div class="rich-editor" id="editor-fa-${idx}" contenteditable="true" style="direction:rtl; text-align:right;"></div>
         <div class="details-save-btn">
@@ -279,26 +365,271 @@
         const editor = document.getElementById(editorId);
         if (!editor) return;
         editor.innerHTML = htmlContent;
-        const toolbar = document.querySelector(`.editor-toolbar[data-editor="${editorId}"]`);
-        if (!toolbar) return;
-        toolbar.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const command = btn.dataset.command;
-                const value = btn.dataset.value || null;
-                if (command === 'createLink') {
-                    const url = prompt('Enter URL:');
-                    if (url) document.execCommand('createLink', false, url);
-                } else if (command === 'insertImage') {
-                    const url = prompt('Enter image URL:');
-                    if (url) document.execCommand('insertImage', false, url);
-                } else {
-                    document.execCommand(command, false, value);
+
+        // Parse block ID: block-{postIdx}-{lang}-{blockIdx}
+        const match = editorId.match(/^block-(\d+)-(en|fa)-(\d+)$/);
+        if (!match) return;
+        const postIdx = parseInt(match[1], 10);
+        const lang = match[2];
+        const blockIdx = parseInt(match[3], 10);
+
+        if (!postsIndex[postIdx]) return;
+        const post = currentPostCache[postsIndex[postIdx].id];
+        if (!post || !post.content?.[lang] || !post.content[lang][blockIdx]) return;
+
+        const block = post.content[lang][blockIdx];
+
+        editor.addEventListener('input', () => {
+            block.text = editor.innerHTML;
+        });
+        editor.addEventListener('focus', () => { activeEditor = editor; });
+        editor.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (document.activeElement !== activeEditor) {
+                    floatingToolbar.classList.remove('visible');
                 }
-                editor.focus();
-            });
+            }, 200);
         });
     }
 
+    function initSummaryEditor(postIdx, lang, editor) {
+        if (!postsIndex[postIdx]) return;
+        const postMeta = postsIndex[postIdx];
+        if (!postMeta.summary) postMeta.summary = {};
+        editor.innerHTML = postMeta.summary[lang] || '';
+        editor.addEventListener('input', () => {
+            postMeta.summary[lang] = editor.innerHTML;
+        });
+        editor.addEventListener('focus', () => { activeEditor = editor; });
+        editor.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (document.activeElement !== activeEditor) {
+                    floatingToolbar.classList.remove('visible');
+                }
+            }, 200);
+        });
+    }
+
+    // ─── Floating toolbar logic ───
+    document.addEventListener('selectionchange', () => {
+        const editor = activeEditor;
+        if (!editor || !document.contains(editor)) {
+            floatingToolbar.classList.remove('visible');
+            return;
+        }
+        const selection = document.getSelection();
+        if (!selection.rangeCount || selection.isCollapsed || !editor.contains(selection.anchorNode)) {
+            floatingToolbar.classList.remove('visible');
+            return;
+        }
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        if (!rect || rect.top === 0) {
+            floatingToolbar.classList.remove('visible');
+            return;
+        }
+        floatingToolbar.classList.add('visible');
+        floatingToolbar.style.top = `${rect.top - 50}px`;
+        floatingToolbar.style.left = `${Math.min(rect.left, window.innerWidth - 300)}px`;
+    });
+    // Helper to save block/summary content after manual DOM manipulation
+    function saveEditorContent() {
+        if (!activeEditor) return;
+        if (activeEditor.id.startsWith('block-')) {
+            const match = activeEditor.id.match(/^block-(\d+)-(en|fa)-(\d+)$/);
+            if (match) {
+                const postIdx = parseInt(match[1], 10);
+                const lang = match[2];
+                const blockIdx = parseInt(match[3], 10);
+                const post = currentPostCache[postsIndex[postIdx].id];
+                if (post?.content?.[lang]?.[blockIdx]) {
+                    post.content[lang][blockIdx].text = activeEditor.innerHTML;
+                }
+            }
+        } else if (activeEditor.id.startsWith('summary-')) {
+            const match = activeEditor.id.match(/^summary-(en|fa)-(\d+)$/);
+            if (match) {
+                const lang = match[1];
+                const postIdx = parseInt(match[2], 10);
+                const postMeta = postsIndex[postIdx];
+                if (postMeta) postMeta.summary[lang] = activeEditor.innerHTML;
+            }
+        }
+    }
+    floatingToolbar.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault();  // prevent losing focus
+            if (!activeEditor) return;
+            activeEditor.focus();
+            const command = btn.dataset.command;
+            const value = btn.dataset.value || null;
+            if (command === 'createLink') {
+                const url = prompt('Enter URL:');
+                if (url) document.execCommand('createLink', false, url);
+            } else if (command === 'foreColor') {
+                // Trigger hidden color picker
+                hiddenColorPicker.onchange = function () {
+                    document.execCommand('foreColor', false, hiddenColorPicker.value);
+                    saveEditorContent();
+                    hiddenColorPicker.onchange = null;
+                };
+                hiddenColorPicker.click();
+            } else if (command === 'rtl') {
+                // Apply RTL to selected text
+                const selection = window.getSelection();
+                if (selection.rangeCount && !selection.isCollapsed) {
+                    const range = selection.getRangeAt(0);
+                    const span = document.createElement('span');
+                    span.dir = 'rtl';
+                    span.style.textAlign = 'right';
+                    span.appendChild(range.extractContents());
+                    range.insertNode(span);
+                    saveEditorContent();
+                }
+            } else if (command === 'ltr') {
+                const selection = window.getSelection();
+                if (selection.rangeCount && !selection.isCollapsed) {
+                    const range = selection.getRangeAt(0);
+                    const span = document.createElement('span');
+                    span.dir = 'ltr';
+                    span.style.textAlign = 'left';
+                    span.appendChild(range.extractContents());
+                    range.insertNode(span);
+                    saveEditorContent();
+                }
+            } else {
+                document.execCommand(command, false, value);
+                saveEditorContent();
+            }
+            // Update block text if block editor
+            if (activeEditor.id.startsWith('block-')) {
+                const match = activeEditor.id.match(/^block-(\d+)-(en|fa)-(\d+)$/);
+                if (match) {
+                    const postIdx = parseInt(match[1], 10);
+                    const lang = match[2];
+                    const blockIdx = parseInt(match[3], 10);
+                    const post = currentPostCache[postsIndex[postIdx].id];
+                    if (post?.content?.[lang]?.[blockIdx]) {
+                        post.content[lang][blockIdx].text = activeEditor.innerHTML;
+                    }
+                }
+            } else if (activeEditor.id.startsWith('summary-')) {
+                const match = activeEditor.id.match(/^summary-(en|fa)-(\d+)$/);
+                if (match) {
+                    const lang = match[1];
+                    const postIdx = parseInt(match[2], 10);
+                    const postMeta = postsIndex[postIdx];
+                    if (postMeta) {
+                        postMeta.summary[lang] = activeEditor.innerHTML;
+                    }
+                }
+            }
+        });
+    });
+    function renderBlockEditor(blockStr, blockIndex, lang, postIdx) {
+        const block = JSON.parse(blockStr);
+        const blockId = `block-${postIdx}-${lang}-${blockIndex}`;
+        let html = `<div class="block-item" data-lang="${lang}" data-idx="${blockIndex}">
+            <div class="block-header">
+                <select class="block-type-select" onchange="changeBlockType(${postIdx}, '${lang}', ${blockIndex}, this.value)">
+                    <option value="paragraph" ${block.type === 'paragraph' ? 'selected' : ''}>¶ Paragraph</option>
+                    <option value="heading" ${block.type === 'heading' ? 'selected' : ''}>H Heading</option>
+                    <option value="image" ${block.type === 'image' ? 'selected' : ''}>🖼️ Image</option>
+                    <option value="video" ${block.type === 'video' ? 'selected' : ''}>🎬 Video</option>
+                    <option value="code" ${block.type === 'code' ? 'selected' : ''}>💻 Code</option>
+                </select>
+                <button class="block-delete-btn" onclick="deleteBlock(${postIdx}, '${lang}', ${blockIndex})">🗑️</button>
+            </div>`;
+
+        if (block.type === 'paragraph' || block.type === 'heading') {
+            html += `<div class="rich-editor" id="${blockId}" contenteditable="true">${block.text || ''}</div>`;
+        } else if (block.type === 'image') {
+            html += `<input placeholder="Image URL" value="${block.src || ''}" onchange="updateBlockField(${postIdx}, '${lang}', ${blockIndex}, 'src', this.value)">`;
+            html += `<input placeholder="Alt text" value="${block.alt || ''}" onchange="updateBlockField(${postIdx}, '${lang}', ${blockIndex}, 'alt', this.value)">`;
+        } else if (block.type === 'video') {
+            html += `<input placeholder="Video URL (YouTube embed)" value="${block.src || ''}" onchange="updateBlockField(${postIdx}, '${lang}', ${blockIndex}, 'src', this.value)">`;
+            html += `<input placeholder="Caption" value="${block.caption || ''}" onchange="updateBlockField(${postIdx}, '${lang}', ${blockIndex}, 'caption', this.value)">`;
+        } else if (block.type === 'code') {
+            html += `<input placeholder="Language (e.g., javascript)" value="${block.language || ''}" onchange="updateBlockField(${postIdx}, '${lang}', ${blockIndex}, 'language', this.value)">`;
+            html += `<textarea onchange="updateBlockField(${postIdx}, '${lang}', ${blockIndex}, 'code', this.value)">${block.code || ''}</textarea>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
+    function addBlock(postIdx, lang) {
+        if (!currentPostCache[postsIndex[postIdx].id]) return;
+        const post = currentPostCache[postsIndex[postIdx].id];
+        if (!post.content) post.content = {};
+        if (!post.content[lang]) post.content[lang] = [];
+        post.content[lang].push({ type: 'paragraph', text: '' });
+        // Reopen details
+        const detailsDiv = document.getElementById(`details-${postIdx}`);
+        if (detailsDiv && detailsDiv.classList.contains('open')) {
+            toggleDetails(postIdx);
+            setTimeout(() => toggleDetails(postIdx), 50);
+        }
+    }
+
+    function deleteBlock(postIdx, lang, blockIdx) {
+        if (!currentPostCache[postsIndex[postIdx].id]) return;
+        const post = currentPostCache[postsIndex[postIdx].id];
+        if (!post.content?.[lang]) return;
+        post.content[lang].splice(blockIdx, 1);
+        // Reopen
+        const detailsDiv = document.getElementById(`details-${postIdx}`);
+        if (detailsDiv && detailsDiv.classList.contains('open')) {
+            toggleDetails(postIdx);
+            setTimeout(() => toggleDetails(postIdx), 50);
+        }
+    }
+
+    function changeBlockType(postIdx, lang, blockIdx, newType) {
+        const post = currentPostCache[postsIndex[postIdx].id];
+        const block = post.content[lang][blockIdx];
+        block.type = newType;
+        // Reset fields
+        if (newType === 'paragraph' || newType === 'heading') block.text = block.text || '';
+        if (newType === 'image') { block.src = block.src || ''; block.alt = block.alt || ''; }
+        if (newType === 'video') { block.src = block.src || ''; block.caption = block.caption || ''; }
+        if (newType === 'code') { block.code = block.code || ''; block.language = block.language || ''; }
+        // Reopen
+        const detailsDiv = document.getElementById(`details-${postIdx}`);
+        if (detailsDiv && detailsDiv.classList.contains('open')) {
+            toggleDetails(postIdx);
+            setTimeout(() => toggleDetails(postIdx), 50);
+        }
+    }
+
+        function updateBlockText(postIdx, lang, blockIdx, text) {
+            const post = currentPostCache[postsIndex[postIdx].id];
+            post.content[lang][blockIdx].text = text;
+        }
+        function updateBlockField(postIdx, lang, blockIdx, field, value) {
+            const post = currentPostCache[postsIndex[postIdx].id];
+            post.content[lang][blockIdx][field] = value;
+        }
+
+    function renderBlocksToHTML(blocks, lang) {
+        if (!Array.isArray(blocks)) return '';
+        return blocks.map(block => {
+            switch (block.type) {
+                case 'paragraph': return `<p>${block.text}</p>`;
+                case 'heading': return `<h2>${block.text}</h2>`;
+                case 'image':
+                    return `<figure><img src="${block.src}" alt="${block.alt || ''}" loading="lazy"><figcaption>${block.alt || ''}</figcaption></figure>`;
+                case 'video':
+                    if (block.src.includes('youtube.com/embed') || block.src.includes('vimeo.com/video')) {
+                        return `<div class="video-wrapper"><iframe src="${block.src}" allowfullscreen></iframe></div>`;
+                    }
+                    return `<video controls src="${block.src}"></video>`;
+                case 'code':
+                    return `<pre><code class="language-${block.language || 'plaintext'}">${block.code}</code></pre>`;
+                default: return '';
+            }
+        }).join('');
+    }
     // ─── Update metadata functions ───
     function updateMeta(idx, field, value) { postsIndex[idx][field] = value; }
     function updateMetaTitle(idx, lang, value) {
@@ -314,23 +645,6 @@
     async function savePost(idx) {
         if (!blogDirHandle) return;
         const postMeta = postsIndex[idx];
-        // Collect content from editors
-        const enEditor = document.getElementById(`editor-en-${idx}`);
-        const faEditor = document.getElementById(`editor-fa-${idx}`);
-        if (!enEditor || !faEditor) return;
-        const newContent = {};
-        const enHTML = enEditor.innerHTML.trim();
-        const faHTML = faEditor.innerHTML.trim();
-        if (enHTML) newContent.en = enHTML;
-        if (faHTML) newContent.fa = faHTML;
-
-        // Update cache and file
-        if (!currentPostCache[postMeta.id]) {
-            currentPostCache[postMeta.id] = { content: {} };
-        }
-        currentPostCache[postMeta.id].content = newContent;
-        // Also update readTime from meta or leave as is
-        // Write post file
         try {
             const fileHandle = await blogDirHandle.getFileHandle(`post-${postMeta.id}.json`);
             await writeJSON(fileHandle, currentPostCache[postMeta.id]);
@@ -406,14 +720,14 @@
     function buildStaticPostHTML(postMeta, postData) {
         const titleEn = postMeta.title?.en || '';
         const titleFa = postMeta.title?.fa || titleEn;
-        const descEn = postMeta.summary?.en || '';
-        const descFa = postMeta.summary?.fa || '';
+        const descEn = stripHTML(postMeta.summary?.en || '');
+        const descFa = stripHTML(postMeta.summary?.fa || '');
         const date = postMeta.date;
-        const contentEn = postData.content?.en || '';
-        const contentFa = postData.content?.fa || '';
+        const contentEnHTML = renderBlocksToHTML(postData.content?.en, 'en');
+        const contentFaHTML = renderBlocksToHTML(postData.content?.fa, 'fa');
         const tags = (postMeta.tags || []).map(tag => `<span>${tag}</span>`).join('');
         const tagsText = (postMeta.tags || []).join(', ');
-        const tagsArray = JSON.stringify(postMeta.tags || []); 
+        const tagsArray = JSON.stringify(postMeta.tags || []);
         const canonical = `blog/post-${postMeta.id}.html`;
         const readTimeEn = postMeta.readTime?.en || '';
         const readTimeFa = postMeta.readTime?.fa || '';
@@ -439,6 +753,7 @@
     <link rel="alternate" hreflang="fa" href="/${canonical}">
     <link rel="canonical" href="/${canonical}">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
     <script type="application/ld+json">
         [
           {
@@ -466,18 +781,6 @@
           }
         ]
     <\/script>
-    <style>
-        .static-post { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .static-post h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
-        .static-post .meta { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-bottom: 24px; }
-        .static-post .content { line-height: 1.8; font-size: 1.05rem; }
-        .static-post .content img, .static-post .content video { max-width: 100%; border-radius: 8px; margin: 12px 0; }
-        .back-link { display: inline-block; margin-top: 40px; color: var(--accent-2); text-decoration: none; font-weight: 600; }
-        .back-link:hover { color: #fff; }
-        .lang-switch { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border: 1px solid var(--border); padding: 8px 14px; border-radius: 50px; color: var(--text); cursor: pointer; font-size: 0.8rem; font-weight: 600; margin-bottom: 24px; }
-        div[lang] { display: none; }
-        div[lang].active { display: block; }
-    </style>
 </head>
 <body>
     <div class="bg-grid"></div>
@@ -493,10 +796,10 @@
             <div class="meta blog-meta">
                 <span class="static-date" data-date="${date}">${date}</span>
                 <span>·</span>
-                <span>${readTimeEn}</span>   
+                <span>${readTimeEn}</span>
                 <div class="project-tech">${tags}</div>
             </div>
-            <div class="content">${contentEn}</div>
+            <div class="content">${contentEnHTML}</div>
             <a href="/index.html#blog" class="back-link">← Back to blog</a>
         </div>
         <div lang="fa" id="content-fa" dir="rtl" style="text-align:right;">
@@ -507,7 +810,7 @@
                 <span>${readTimeFa}</span>
                 <div class="project-tech">${tags}</div>
             </div>
-            <div class="content">${contentFa}</div>
+            <div class="content">${contentFaHTML}</div>
             <a href="/index.html#blog" class="back-link">→ بازگشت به نوشته‌ها</a>
         </div>
     </main>

@@ -1,0 +1,89 @@
+﻿/* ── Static Blog Post Page ── */
+.static-post {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+.static-post h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+}
+.static-post .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    margin-bottom: 24px;
+}
+.static-post .content {
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+.static-post .content img,
+.static-post .content video {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 12px 0;
+}
+.back-link {
+    display: inline-block;
+    margin-top: 40px;
+    color: var(--accent-2);
+    text-decoration: none;
+    font-weight: 600;
+}
+.back-link:hover {
+    color: #fff;
+}
+
+/* Language blocks (static blog) */
+div[lang] { display: none; }
+div[lang].active { display: block; }
+
+/* Rich media blocks */
+.static-post figure {
+    margin: 20px 0;
+}
+.static-post figcaption {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 6px;
+}
+.static-post .video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 20px 0;
+}
+.static-post .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+.static-post video {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+.static-post pre {
+    background: var(--surface-2);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+.static-post code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+}

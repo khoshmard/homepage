@@ -269,7 +269,7 @@ function renderBlogNextPosts() {
                 <span>${(post.readTime?.[lang]) || (post.readTime?.en) || ''}</span>
             </div>
             <h3>${(post.title?.[lang]) || (post.title?.en) || ''}</h3>
-            <p>${(post.summary?.[lang]) || (post.summary?.en) || ''}</p>
+            <div class="blog-summary">${(post.summary?.[lang]) || (post.summary?.en) || ''}</div>
             <div class="project-tech">${(post.tags || []).map(tag => `<span>${tag}</span>`).join('')}</div>
             <span class="project-link">${lang === 'en' ? 'Read more  →' : 'ادامه مطلب ←'}</span>
         `;
