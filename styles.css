@@ -342,22 +342,6 @@ html[lang="fa"] .modal-meta {
     .section { padding: 40px 0; }
 }
 
-/* ── Blog card meta (already defined earlier but included for completeness) ── */
-.blog-card .blog-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.blog-summary {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-}
-
 /* ── Load more button & no more message ── */
 .load-more-wrap {
     text-align: center;

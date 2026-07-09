@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khoshmard — Telecom & AI Engineer</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="blog.css" />
 </head>
 <body>
 
@@ -41,8 +42,9 @@
     <section class="section" id="blog-section" style="display: none;">
         <div class="container">
             <p class="section-label" data-i18n="blogLabel">Writings</p>
-            <h2 class="section-title" data-i18n="blogTitle">Latest Blog Posts</h2>
+            <h2 class="section-title" id ="blog-section-title" data-i18n="blogTitle">Latest Blog Posts</h2>
             <div class="projects-grid" id="blog-posts-container"></div>
+            <div class="blog-reader" id="blog-reader" style="display:none;"></div>
             <div class="load-more-wrap">
                 <button class="load-more-btn" id="blog-load-more" data-i18n="loadMore">Load More Posts</button>
                 <p class="no-more" id="blog-no-more" data-i18n="noMore">You've reached the end.</p>
@@ -90,7 +92,7 @@
     <!-- Footer -->
     <footer class="footer" id="main-footer"></footer>
 
-    <!-- Modal (shared for projects and blog posts) -->
+    <!-- Modal -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" id="modal-close">&times;</button>

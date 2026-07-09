@@ -3,6 +3,7 @@ let portfolioData = {};
 let postsIndex = [];
 let postsCache = {};
 let blogDisplayedCount = 0;
+let currentBlogPostId = null;
 const POSTS_PER_PAGE = 3;
 let allSocialPosts = [];
 let socialDisplayedCount = 0;
@@ -197,7 +198,14 @@ function renderMainPage() {
         }).join('');
     }
 
-    resetBlogPosts();
+    if (currentBlogPostId) {
+        const postMeta = postsIndex.find(p => p.id == currentBlogPostId);
+        if (postMeta) {
+            renderBlogReader(postMeta);
+        }
+    } else {
+        resetBlogPosts();
+    }
     resetSocialPosts();
 }
 
@@ -277,7 +285,7 @@ function renderBlogNextPosts() {
         `;
         card.addEventListener('click', (e) => {
             e.preventDefault();
-            openBlogModal(post);
+            renderBlogReader(post);
         });
         blogPostsContainer.appendChild(card);
     });
@@ -573,40 +581,6 @@ function openProjectModal(projectId) {
     modalOverlay?.classList.add('active');
 }
 
-// ─── Modal: blog ───
-async function openBlogModal(postMeta) {
-    const postId = postMeta.id;
-    if (!postsCache[postId]) {
-        try {
-            const res = await fetch(`blog/post-${postId}.json`);
-            postsCache[postId] = await res.json();
-        } catch (e) {
-            if (modalBody) modalBody.innerHTML = '<p>Error loading article.</p>';
-            return;
-        }
-    }
-    const postData = postsCache[postId];
-    const lang = window.appLang || 'en';
-
-    // Render blocks to HTML
-    const blocks = postData.content?.[lang] || postData.content?.en || [];
-    const contentHTML = renderBlocksToHTML(blocks);
-
-    // Reading time
-    const readTimeMin = postMeta.readTimeMin || postData.readTimeMin || 0;
-    const readTimeText = lang === 'en'
-        ? `${readTimeMin} min read`
-        : `${toPersianDigits(readTimeMin)} دقیقه مطالعه`;
-
-    if (modalIcon) modalIcon.textContent = postMeta.icon || '📝';
-    if (modalMeta) modalMeta.textContent = `${lang === 'fa' ? toJalali(postMeta.date) : postMeta.date}  ·  ${readTimeText}`;
-    if (modalTitle) modalTitle.textContent = (postMeta.title?.[lang]) || (postMeta.title?.en) || '';
-    if (modalBody) modalBody.innerHTML = contentHTML;
-    if (modalTech) modalTech.innerHTML = (postMeta.tags || []).map(tag => `<span>${tag}</span>`).join('');
-    if (modalLink) modalLink.style.display = 'none';
-    modalOverlay?.classList.add('active');
-}
-
 function closeModal() {
     modalOverlay?.classList.remove('active');
     // Also close media modal if active
@@ -620,6 +594,57 @@ function closeModal() {
     if (modalBody) modalBody.style.display = '';
     if (modalTech) modalTech.style.display = '';
     if (modalLink) modalLink.style.display = '';
+}
+
+async function renderBlogReader(postMeta) {
+    const postId = postMeta.id;
+    currentBlogPostId = postMeta.id;
+    if (!postsCache[postId]) {
+        try {
+            const res = await fetch(`blog/post-${postId}.json`);
+            postsCache[postId] = await res.json();
+        } catch (e) { return; }
+    }
+    const postData = postsCache[postId];
+    const lang = window.appLang || 'en';
+    const blocks = postData.content?.[lang] || postData.content?.en || [];
+    const contentHTML = renderBlocksToHTML(blocks);
+    const readTimeMin = postMeta.readTimeMin || 0;
+    const readTimeText = lang === 'en' ? `${readTimeMin} min read` : `${toPersianDigits(readTimeMin)} دقیقه مطالعه`;
+
+    const reader = document.getElementById('blog-reader');
+    const grid = document.getElementById('blog-posts-container');
+    const title = document.getElementById('blog-section-title');
+    const loadMoreWrap = document.querySelector('#blog-section .load-more-wrap');
+
+    // Hide grid and show reader
+    grid.style.display = 'none';
+    title.style.display = 'none';
+    if (loadMoreWrap) loadMoreWrap.style.display = 'none';
+    reader.style.display = 'block';
+    reader.innerHTML = `
+        <span class="back-link" id="blog-back-btn">← ${lang === 'en' ? 'Back to blog' : 'بازگشت به بلاگ'}</span>
+        <h1>${(postMeta.title?.[lang]) || (postMeta.title?.en) || ''}</h1>
+        <div class="meta blog-meta">
+            <span>${lang === 'fa' ? toJalali(postMeta.date) : postMeta.date}</span>
+            <span>·</span>
+            <span>${readTimeText}</span>
+            <div class="project-tech">${(postMeta.tags || []).map(t => `<span>${t}</span>`).join('')}</div>
+        </div>
+        <div class="blog-body">${contentHTML}</div>
+    `;
+
+    // Scroll to the reader
+    reader.scrollIntoView({ behavior: 'smooth' });
+
+    // Back button hides reader and shows grid
+    document.getElementById('blog-back-btn').addEventListener('click', () => {
+        currentBlogPostId = null;
+        reader.style.display = 'none';
+        grid.style.display = '';
+        title.style.display = '';
+        if (loadMoreWrap) loadMoreWrap.style.display = '';
+    });
 }
 
 // ─── Navigation ───
